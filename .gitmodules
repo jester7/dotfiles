@@ -1,0 +1,3 @@
+[submodule "emacs/.emacs.d/jester/private"]
+	path = emacs/.emacs.d/jester/private
+	url = git@github.com:jester7/private-dotfiles.git

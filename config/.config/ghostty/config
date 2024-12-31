@@ -1,0 +1,29 @@
+scrollback-limit = 10000000
+
+
+cursor-opacity = 0.34
+cursor-style = block
+
+keybind = global:ctrl+grave_accent=toggle_quick_terminal
+
+font-family = Darkmode Mono On
+font-size = 15
+theme = Tomorrow Night
+
+adjust-cell-height = 1%
+background-opacity = 0.88
+background-blur-radius = 18
+
+mouse-hide-while-typing = true
+mouse-scroll-multiplier = 2
+
+window-padding-balance = true 
+window-save-state = always
+macos-titlebar-style = transparent
+
+
+copy-on-select = false
+shell-integration = detect
+shell-integration-features = no-cursor,sudo,title
+
+term = xterm-256color

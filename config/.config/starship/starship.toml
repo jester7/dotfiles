@@ -1,0 +1,94 @@
+format = """
+$directory\
+$git_branch\
+$git_status\
+$fill\
+$python\
+$lua\
+$java\
+$custom\
+$nodejs\
+$golang\
+$haskell\
+$rust\
+$ruby\
+$aws\
+$gcloud\
+$docker_context\
+$jobs\
+$cmd_duration\
+$line_break\
+$jobs\
+$time\
+$character"""
+
+add_newline = true
+
+[character] # The name of the module we are configuring is 'character'
+success_symbol = '[➜](bold green)' # The 'success_symbol' segment is be
+
+[line_break]
+disabled = false
+
+[directory]
+style = 'bold fg:blue'
+format = '[$path ]($style)'
+truncation_length = 3
+truncation_symbol = '…/'
+truncate_to_repo = false
+
+[fill]
+symbol = ' '
+
+[cmd_duration]
+min_time = 1000
+format = "took [$duration]($style) "
+
+[git_branch]
+style = 'fg:green'
+symbol = ' '
+format = '[on](white) [$symbol$branch ]($style)'
+
+[git_status]
+style = 'fg:red'
+format = '([$all_status$ahead_behind]($style) )'
+
+
+[aws]
+symbol = ' '
+style = 'yellow'
+format = '[$symbol($profile )(\[$duration\] )]($style)'
+
+[gcloud]
+symbol = "󱇶 "
+style = 'red'
+format = 'on [$symbol$account(@$domain)(\($region\))]($style) '
+
+# Programming languages
+[nodejs]
+format = "[$symbol($version )]($style)"
+symbol = ' '
+
+[python]
+python_binary = ['python3', 'python']
+pyenv_version_name = false
+style = 'teal'
+symbol = ' '
+
+
+[custom.clojure]
+command = 'clojure-version-check.bb'
+detect_files = ['deps.edn']
+symbol = ' '
+format = 'and [$symbol($output)]($style) '
+style = 'blue'
+
+
+[package]
+symbol = '󰏗 '
+
+# Time
+[time]
+disabled = false
+format = ' [$time]($style) '
+time_format = "%R"
