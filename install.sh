@@ -3,7 +3,7 @@
 DOTFILES="$HOME/dotfiles"
 cd "$DOTFILES" || exit 1
 
-# Backup existing configs
+# Backup specific files/dirs, not entire directories
 backup_if_exists() {
     if [ -e "$1" ]; then
         echo "Backing up $1 to $1.backup"
@@ -11,8 +11,15 @@ backup_if_exists() {
     fi
 }
 
-# Backup existing configurations
-backup_if_exists "$HOME/.emacs.d"
+# Backup only specific Emacs files, not the whole .emacs.d
+backup_if_exists "$HOME/.emacs.d/init.el"
+backup_if_exists "$HOME/.emacs.d/early-init.el"
+if [ -d "$HOME/.emacs.d/jester" ]; then
+    echo "Backing up jester directory to jester.backup"
+    mv "$HOME/.emacs.d/jester" "$HOME/.emacs.d/jester.backup"
+fi
+
+# Backup other config files
 backup_if_exists "$HOME/.zshrc"
 backup_if_exists "$HOME/.zshrc-$(hostname)"
 backup_if_exists "$HOME/.bashrc"
@@ -25,6 +32,7 @@ backup_if_exists "$HOME/bin"
 # Create necessary directories
 mkdir -p "$HOME/.config"
 mkdir -p "$HOME/bin"
+mkdir -p "$HOME/.emacs.d/jester"
 
 # Use stow to create symlinks
 packages=(emacs bin zsh bash config)
@@ -35,4 +43,3 @@ for package in "${packages[@]}"; do
 done
 
 echo "Dotfiles installation complete!"
-
