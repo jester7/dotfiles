@@ -35,13 +35,21 @@
    (t 'unknown)))
 
 (defun load-machine-specific-config (config-name)
-  "Load a machine-specific configuration file based on
-   CONFIG-NAME and `my-machine-type`."
-  (let* ((config-dir (expand-file-name "~/.emacs.d/jester/"))
-         (file (concat config-dir config-name "-" (symbol-name my-machine-type) ".el")))
-    (if (file-exists-p file)
-        (load file)
-      (message "Machine-specific config %s not found" file))))
+  "Load a machine-specific configuration file based on CONFIG-NAME and `my-machine-type`.
+First tries to load from private config, falls back to public if not found."
+  (let* ((private-dir (expand-file-name "~/.emacs.d/jester/private/"))
+         (public-dir (expand-file-name "~/.emacs.d/jester/"))
+         (private-file (concat private-dir config-name "-" (symbol-name my-machine-type) ".el"))
+         (public-file (concat public-dir config-name "-" (symbol-name my-machine-type) ".el")))
+    (cond
+     ;; Try private file first
+     ((file-exists-p private-file)
+      (load private-file))
+     ;; Fall back to public file
+     ((file-exists-p public-file)
+      (load public-file))
+     (t
+      (message "Machine-specific config %s not found in private or public directories" config-name)))))
 
 (let ((base-threshold
        (cond
