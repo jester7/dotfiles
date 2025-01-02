@@ -1,6 +1,5 @@
 scrollback-limit = 10000000
 
-
 cursor-opacity = 0.34
 cursor-style = block
 
@@ -11,8 +10,9 @@ font-size = 15
 theme = Tomorrow Night
 
 adjust-cell-height = 1%
-background-opacity = 0.88
-background-blur-radius = 18
+background-opacity = 0.84
+background-blur-radius = 14
+unfocused-split-fill = 343434
 
 mouse-hide-while-typing = true
 mouse-scroll-multiplier = 2
