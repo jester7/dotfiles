@@ -50,5 +50,9 @@ show_cloud_banner
 export STARSHIP_CONFIG="$HOME/.config/starship/starship.toml"
 eval "$(starship init bash)"
 
+# fastfetch info
+image_path="$HOME/.config/fastfetch/images/black-clover-5-leaf-clover.png"
+fastfetch --kitty "$image_path"
+
 # Shared configurations
 
