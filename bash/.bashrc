@@ -40,7 +40,7 @@ show_cloud_banner() {
     TEXT="$ICON  $CLOUD - $(hostname)"
 
     echo ""
-   printf "${BG}%/s%s%/s\e[0m\n" $(((TERM_WIDTH-${#TEXT})/2)) "" "$TEXT" $(((TERM_WIDTH-${#TEXT})/2)) ""
+    printf "${BG}%*s%s%*s\e[0m\n" $(((TERM_WIDTH-${#TEXT})/2)) "" "$TEXT" $(((TERM_WIDTH-${#TEXT})/2)) ""
     echo ""
 }
 
