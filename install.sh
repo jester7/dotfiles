@@ -3,6 +3,14 @@
 DOTFILES="$HOME/dotfiles"
 cd "$DOTFILES" || exit 1
 
+# For .bashrc and .zshrc, rename to hostname-specific if they exist and aren't symlinks
+for rc in ".bashrc" ".zshrc"; do
+    if [ -f "$HOME/$rc" ] && [ ! -L "$HOME/$rc" ]; then
+        echo "Moving $HOME/$rc to $HOME/$rc-$HOSTNAME"
+        mv "$HOME/$rc" "$HOME/$rc-$HOSTNAME"
+    fi
+done
+
 # Backup specific files/dirs, not entire directories
 backup_if_exists() {
     if [ -e "$1" ]; then
@@ -19,11 +27,8 @@ if [ -d "$HOME/.emacs.d/jester" ]; then
     mv "$HOME/.emacs.d/jester" "$HOME/.emacs.d/jester.backup"
 fi
 
-# Backup other config files
-backup_if_exists "$HOME/.zshrc"
-backup_if_exists "$HOME/.zshrc-$(hostname)"
-backup_if_exists "$HOME/.bashrc"
-backup_if_exists "$HOME/.bash_profile"
+# backup other config files
+# backup_if_exists "$HOME/.bash_profile"
 backup_if_exists "$HOME/.config/starship"
 backup_if_exists "$HOME/.config/fastfetch"
 backup_if_exists "$HOME/.config/ghostty"
