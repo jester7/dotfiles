@@ -1,10 +1,16 @@
+# Source machine-specific config if it exists
+[[ -f ~/.bashrc-$HOSTNAME ]] && source ~/.bashrc-$HOSTNAME
+
 # cloud detection and banner function
 show_cloud_banner() {
+    # Get terminal width
+    TERM_WIDTH=$(tput cols)
+    
     # detect OS or cloud provider
     if [[ "$OSTYPE" == "darwin"* ]]; then
         BG="\e[48;5;240m"        # Gray
         CLOUD="macOS"
-        ICON="" # Apple Logo
+        ICON=" " # Apple Logo
     elif [ -f /sys/class/dmi/id/product_name ]; then
         case $(cat /sys/class/dmi/id/product_name) in
             *"Google"*)
@@ -20,32 +26,25 @@ show_cloud_banner() {
             *"Microsoft"*)
                 BG="\e[48;2;0;120;212m"  # Azure Blue
                 CLOUD="Azure"
-                ICON="󰠅" # Azure Logo
+                ICON=" " # Azure Logo
                 ;;
             *)
                 BG="\e[48;5;240m"        # Generic Gray
                 CLOUD="Unknown Cloud"
-                ICON="󰒋" # Generic Cloud
+                ICON=" " # Generic Cloud
                 ;;
         esac
     fi
 
     # calculate width based on text length
-    TEXT="   $ICON  $CLOUD - $(hostname)   "
-    WIDTH=${#TEXT}
+    TEXT="$ICON  $CLOUD - $(hostname)"
 
-    # print three-line box
-    echo -e "${BG}$(printf ' %.0s' $(seq 1 $WIDTH))\e[0m"
-    echo -e "${BG}${TEXT}\e[0m"
-    echo -e "${BG}$(printf ' %.0s' $(seq 1 $WIDTH))\e[0m"
+    echo ""
+   printf "${BG}%/s%s%/s\e[0m\n" $(((TERM_WIDTH-${#TEXT})/2)) "" "$TEXT" $(((TERM_WIDTH-${#TEXT})/2)) ""
+    echo ""
 }
 
 show_cloud_banner
-
-
-
-# Source machine-specific config
-source ~/.bashrc-$HOSTNAME
 
 # Starship config
 export STARSHIP_CONFIG="$HOME/.config/starship/starship.toml"

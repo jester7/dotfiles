@@ -1,5 +1,50 @@
-# Source machine-specific config
-source ~/.bashrc-$HOSTNAME
+# Source machine-specific config if it exists
+[[ -f ~/.zshrc-$HOSTNAME ]] && source ~/.zshrc-$HOSTNAME
+
+# cloud detection and banner function
+show_cloud_banner() {
+    # Get terminal width
+    TERM_WIDTH=$(tput cols)
+    
+    # Detect OS and cloud provider
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        BG="\e[48;5;240m"        # Gray
+        CLOUD="macOS"
+        ICON=" " # Apple Logo
+    elif [[ -f /sys/class/dmi/id/product_name ]]; then
+        case $(cat /sys/class/dmi/id/product_name) in
+            *"Google"*) 
+                BG="\e[48;2;66;133;244m" # Google Blue
+                CLOUD="Google Cloud"
+                ICON="󱇶 " # GCP Logo
+                ;;
+            *"Amazon"*) 
+                BG="\e[48;2;255;153;0m"  # AWS Orange
+                CLOUD="AWS"
+                ICON=" " # AWS Logo
+                ;;
+            *"Microsoft"*)
+                BG="\e[48;2;0;120;212m"  # Azure Blue
+                CLOUD="Azure"
+                ICON=" " # Azure Logo
+                ;;
+            *)
+                BG="\e[48;5;240m"        # Generic Gray
+                CLOUD="Unknown Cloud"
+                ICON=" " # Generic Cloud
+                ;;
+        esac
+    fi
+
+    TEXT="$ICON $CLOUD - ${HOST}"
+
+    # Print three-line box using full terminal width
+    print
+    print -P "${BG}${(l:(($TERM_WIDTH-$#TEXT))/2:: :)}${TEXT}${(l:(($TERM_WIDTH-$#TEXT))/2:: :)}%f%k"
+    print 
+}
+
+show_cloud_banner
 
 export PATH="/usr/local/opt/openjdk/bin:$PATH"
 
