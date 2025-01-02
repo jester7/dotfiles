@@ -1,3 +1,6 @@
+# Source machine-specific config
+source ~/.bashrc-$HOSTNAME
+
 export PATH="/usr/local/opt/openjdk/bin:$PATH"
 
 export DOTNET_ROOT="$HOMEBREW_PREFIX/opt/dotnet/libexec"
