@@ -1,4 +1,6 @@
 scrollback-limit = 10000000
+focus-follows-mouse = true
+clipboard-trim-trailing-spaces = true
 
 cursor-opacity = 0.34
 cursor-style = block
