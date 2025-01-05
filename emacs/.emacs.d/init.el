@@ -761,6 +761,7 @@ If the new path's directories does not exist, create them."
 
 (load-file "~/.emacs.d/jester/gptel-config.el")
 ;; (load-file "~/.emacs.d/jester/gptel-copilot.el")
+(load-file "~/.emacs.d/jester/llm-chat-search.el")
 
 (use-package markdown-mode
   :ensure t
