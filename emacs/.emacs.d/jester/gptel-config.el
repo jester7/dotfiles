@@ -107,7 +107,7 @@
       (message "GPTel model set to: %s:%s" (symbol-name backend-sym) model-name)))
   
   :config
-  (setq gptel-use-tools nil)
+  (setq gptel-use-tools t)
   (setq gptel-track-media t)
   (gptel-ensure-backends)
   (add-hook 'gptel-mode-hook 'gptel-ensure-backends)
@@ -157,121 +157,121 @@ Responde sólo con el texto suficiente para completar la oración o el párrafo 
                         (insert selected))))))))
 
 
-;; (setq gptel-tools
-;;       (list
-;;        ;; URL reading tool
-;;        (gptel-make-tool
-;; 	:function (lambda (url)
-;; 		    (with-current-buffer (url-retrieve-synchronously url)
-;; 		      (goto-char (point-min))
-;; 		      (re-search-forward "\n\n")
-;; 		      (buffer-substring-no-properties (point) (point-max))))
-;; 	:name "read_url"
-;; 	:description "Fetch and read the contents of a URL"
-;; 	:args (list '(:name "url"
-;; 			    :type "string"
-;; 			    :description "The URL to read")))
+(setq gptel-tools
+      (list
+       ;; URL reading tool
+       (gptel-make-tool
+	:function (lambda (url)
+		    (with-current-buffer (url-retrieve-synchronously url)
+		      (goto-char (point-min))
+		      (re-search-forward "\n\n")
+		      (buffer-substring-no-properties (point) (point-max))))
+	:name "read_url"
+	:description "Fetch and read the contents of a URL"
+	:args (list '(:name "url"
+			    :type "string"
+			    :description "The URL to read")))
 
-;;        ;; Echo to scratch tool
-;;        (gptel-make-tool
-;;         :function (lambda (text)
-;;                     (with-current-buffer "*scratch*"
-;;                       (goto-char (point-max))
-;;                       (insert (format "%s\n" text)))
-;;                     (format "Appended to scratch: %s" text))
-;;         :name "echo_scratch"
-;;         :description "Append a message to the *scratch* buffer"
-;;         :args (list '(:name "text"
-;;                      :type "string"
-;;                      :description "The text to append to the scratch buffer")))
+       ;; Echo to scratch tool
+       (gptel-make-tool
+        :function (lambda (text)
+                    (with-current-buffer "*scratch*"
+                      (goto-char (point-max))
+                      (insert (format "%s\n" text)))
+                    (format "Appended to scratch: %s" text))
+        :name "echo_scratch"
+        :description "Append a message to the *scratch* buffer"
+        :args (list '(:name "text"
+			    :type "string"
+			    :description "The text to append to the scratch buffer")))
        
-;;        ;; Message buffer logging tool
-;;        (gptel-make-tool
-;;         :function (lambda (text)
-;;                     (message "%s" text)
-;;                     (format "Message sent: %s" text))
-;;         :name "echo_message"
-;;         :description "Send a message to the *Messages* buffer"
-;;         :args (list '(:name "text"
-;;                      :type "string"
-;;                      :description "The text to send to the messages buffer")))
+       ;; Message buffer logging tool
+       (gptel-make-tool
+        :function (lambda (text)
+                    (message "%s" text)
+                    (format "Message sent: %s" text))
+        :name "echo_message"
+        :description "Send a message to the *Messages* buffer"
+        :args (list '(:name "text"
+			    :type "string"
+			    :description "The text to send to the messages buffer")))
        
-;;        ;; Scratch buffer retrieval tool
-;;        (gptel-make-tool
-;;         :function (lambda ()
-;;                     (with-current-buffer "*scratch*"
-;;                       (buffer-substring-no-properties (point-min) (point-max))))
-;;         :name "get_scratch_buffer"
-;;         :description "Return the contents of the *scratch* buffer"
-;;         :args nil)
+       ;; Scratch buffer retrieval tool
+       (gptel-make-tool
+        :function (lambda ()
+                    (with-current-buffer "*scratch*"
+                      (buffer-substring-no-properties (point-min) (point-max))))
+        :name "get_scratch_buffer"
+        :description "Return the contents of the *scratch* buffer"
+        :args nil)
        
 
-;;        (gptel-make-tool
-;; 	:function (lambda (directory)
-;; 		    (shell-command-to-string 
-;; 		     (format "ls %s" 
-;; 			     (shell-quote-argument 
-;; 			      (expand-file-name directory)))))
-;; 	:name "list_directory"
-;; 	:description "List the contents of a given directory"
-;; 	:args (list '(:name "directory"
-;; 			    :type "string"
-;; 			    :description "The path to the directory to list")))
+       (gptel-make-tool
+	:function (lambda (directory)
+		    (shell-command-to-string 
+		     (format "ls %s" 
+			     (shell-quote-argument 
+			      (expand-file-name directory)))))
+	:name "list_directory"
+	:description "List the contents of a given directory"
+	:args (list '(:name "directory"
+			    :type "string"
+			    :description "The path to the directory to list")))
        
-;;        (gptel-make-tool
-;;         :function (lambda (parent name)
-;;                     (condition-case nil
-;;                         (progn
-;;                           (make-directory (expand-file-name name parent) t)
-;;                           (format "Directory %s created/verified in %s" name parent))
-;;                       (error (format "Error creating directory %s in %s" name parent))))
-;;         :name "make_directory"
-;;         :description "Create a new directory with the given name in the specified parent directory"
-;;         :args (list '(:name "parent"
-;; 			    :type "string"
-;; 			    :description "The parent directory where the new directory should be created")
-;;                     '(:name "name"
-;; 			    :type "string"
-;; 			    :description "The name of the new directory to create")))
+       (gptel-make-tool
+        :function (lambda (parent name)
+                    (condition-case nil
+                        (progn
+                          (make-directory (expand-file-name name parent) t)
+                          (format "Directory %s created/verified in %s" name parent))
+                      (error (format "Error creating directory %s in %s" name parent))))
+        :name "make_directory"
+        :description "Create a new directory with the given name in the specified parent directory"
+        :args (list '(:name "parent"
+			    :type "string"
+			    :description "The parent directory where the new directory should be created")
+                    '(:name "name"
+			    :type "string"
+			    :description "The name of the new directory to create")))
 
-;;        (gptel-make-tool
-;;         :function (lambda (path filename content)
-;;                     (let ((full-path (expand-file-name filename path)))
-;;                       (with-temp-buffer
-;;                         (insert content)
-;;                         (write-file full-path))
-;;                       (format "Created file %s in %s" filename path)))
-;;         :name "create_file"
-;;         :description "Create a new file with the specified content"
-;;         :args (list '(:name "path"
-;; 			    :type "string"
-;; 			    :description "The directory where to create the file")
-;;                     '(:name "filename"
-;; 			    :type "string"
-;; 			    :description "The name of the file to create")
-;;                     '(:name "content"
-;; 			    :type "string"
-;; 			    :description "The content to write to the file")))
+       (gptel-make-tool
+        :function (lambda (path filename content)
+                    (let ((full-path (expand-file-name filename path)))
+                      (with-temp-buffer
+                        (insert content)
+                        (write-file full-path))
+                      (format "Created file %s in %s" filename path)))
+        :name "create_file"
+        :description "Create a new file with the specified content"
+        :args (list '(:name "path"
+			    :type "string"
+			    :description "The directory where to create the file")
+                    '(:name "filename"
+			    :type "string"
+			    :description "The name of the file to create")
+                    '(:name "content"
+			    :type "string"
+			    :description "The content to write to the file")))
 
-;;        (gptel-make-tool
-;; 	:function (lambda (filepath)
-;; 		    (with-temp-buffer
-;; 		      (insert-file-contents (expand-file-name filepath))
-;; 		      (buffer-string)))
-;; 	:name "read_file"
-;; 	:description "Read and display the contents of a file"
-;; 	:args (list '(:name "filepath"
-;; 			    :type "string"
-;; 			    :description "Path to the file to read (supports relative paths and ~)")))
+       (gptel-make-tool
+	:function (lambda (filepath)
+		    (with-temp-buffer
+		      (insert-file-contents (expand-file-name filepath))
+		      (buffer-string)))
+	:name "read_file"
+	:description "Read and display the contents of a file"
+	:args (list '(:name "filepath"
+			    :type "string"
+			    :description "Path to the file to read (supports relative paths and ~)")))
 
-;;        (gptel-make-tool
-;;         :function (lambda (directory)
-;;                     (shell-command-to-string 
-;;                      (format "bb %s %s" 
-;;                              (expand-file-name "ls-tree-view.bb" "~/bin")
-;;                              (shell-quote-argument directory))))
-;;         :name "tree_view"
-;;         :description "Show a tree view of the specified directory"
-;;         :args (list '(:name "directory"
-;; 			    :type "string"
-;; 			    :description "The directory to show the tree view for")))))
+       (gptel-make-tool
+        :function (lambda (directory)
+                    (shell-command-to-string 
+                     (format "bb %s %s" 
+                             (expand-file-name "ls-tree-view.bb" "~/bin")
+                             (shell-quote-argument directory))))
+        :name "list_directory_tree_view"
+        :description "Show a tree view of the specified directory"
+        :args (list '(:name "directory"
+			    :type "string"
+			    :description "The directory to show the tree view for")))))
