@@ -16,7 +16,7 @@
 with backend, model info, filename, last modified time, and size metadata,
 sorted by modification time. Shows all files if search string is empty."
   (interactive)
-  (let* ((search-dir (expand-file-name "~/Documents/llm-chats/"))
+  (let* ((search-dir llm-chat-search-root-dir)
          (pattern (completing-read "Search LLM chats (empty for all): " nil nil nil))
          (files (directory-files-recursively search-dir "\\.\\(org\\|md\\)$"))
          (matches))
@@ -135,7 +135,12 @@ sorted by modification time. Shows all files if search string is empty."
                                        (cycle-sort-function . identity))
 			  (complete-with-action action candidates string pred))))
                (selected (completing-read "Select file to open: " table nil t)))
-	  (find-file (get-text-property 0 'full-path (car (member selected candidates)))))
+	  (let ((buf
+		 (find-file
+		  (get-text-property 0 'full-path (car (member selected candidates))))))
+	    (with-current-buffer buf
+	      (gptel-mode)
+	      (set-buffer-modified-p nil))))
       (message "No matching files found."))))
 
 (global-set-key (kbd "C-c l s") 'llm-chat-search-completion)
