@@ -1,3 +1,8 @@
+(defcustom llm-chat-search-root-dir (expand-file-name "~/Documents/llm-chats/")
+  "Root directory for LLM chat files search."
+  :type 'directory
+  :group 'gptel)
+
 (defun llm-chat-search-format-file-size (size)
   "Format file size in a human-readable way."
   (cond
