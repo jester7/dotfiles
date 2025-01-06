@@ -43,6 +43,7 @@
   :ensure t
   :defer t
   :config
+  (require 'org-tempo)
   (setq org-support-shift-select t)
   :hook
   (org-mode . visual-line-mode))
