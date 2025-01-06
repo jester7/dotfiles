@@ -140,7 +140,10 @@ sorted by modification time. Shows all files if search string is empty."
 		  (get-text-property 0 'full-path (car (member selected candidates))))))
 	    (with-current-buffer buf
 	      (gptel-mode)
-	      (set-buffer-modified-p nil))))
+	      (when (derived-mode-p 'org-mode)
+		(org-cycle))
+	      (set-buffer-modified-p nil)
+	      (end-of-buffer))))
       (message "No matching files found."))))
 
 (global-set-key (kbd "C-c l s") 'llm-chat-search-completion)
