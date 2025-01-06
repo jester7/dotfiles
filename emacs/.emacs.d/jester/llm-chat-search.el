@@ -11,7 +11,7 @@
    ((< size (* 1024 1024 1024)) (format "%.1fM" (/ size (* 1024.0 1024.0))))
    (t (format "%.1fG" (/ size (* 1024.0 1024.0 1024.0))))))
 
-(defun llm-chat-search-completion ()
+(defun llm-chat-search-and-load ()
   "Search through LLM chat files, presenting completion candidates
 with backend, model info, filename, last modified time, and size metadata,
 sorted by modification time. Shows all files if search string is empty."
@@ -146,4 +146,45 @@ sorted by modification time. Shows all files if search string is empty."
 	      (goto-char (point-max)))))
       (message "No matching files found."))))
 
-(global-set-key (kbd "C-c l s") 'llm-chat-search-completion)
+(defcustom llm-chat-filename-suggester-backend gptel-backend-deepinfra
+  "Backend to use for generating filename suggestions."
+  :type 'variable
+  :group 'gptel)
+
+(defcustom llm-chat-filename-suggester-model "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo"
+  "Model to use for generating filename suggestions."
+  :type 'string
+  :group 'gptel)
+
+(defun llm-chat-save-with-suggested-name ()
+  "Save current gptel chat with an LLM-suggested filename."
+  (interactive)
+  (unless (bound-and-true-p gptel-mode)
+    (user-error "Not in a gptel chat buffer"))
+  
+  (let* ((content (buffer-substring-no-properties 
+                   (point-min) 
+                   (min (point-max) (+ (point-min) 3000))))
+         (prompt "Based on this conversation, suggest a concise filename (4-10 words) 
+with words separated by hyphens. Return ONLY the suggested filename, no other text.
+Example format: improving-emacs-llm-chat-organization")
+         (gptel-backend llm-chat-filename-suggester-backend)
+         (gptel-model llm-chat-filename-suggester-model))
+    
+    (gptel-request content
+      :system prompt
+      :context nil
+      :callback (lambda (response info)
+                  (when response
+                    (condition-case nil
+                        (let* ((suggested-name (string-trim response))
+                               (full-name (read-file-name 
+                                           "Save as: "
+                                           llm-chat-search-root-dir
+                                           nil nil
+                                           (concat suggested-name ".org"))))
+                          (write-file full-name))
+                      (quit (message "Save cancelled"))))))))
+
+(global-set-key (kbd "C-c l l") 'llm-chat-search-and-load) ; load
+(global-set-key (kbd "C-c l s") 'llm-chat-save-with-suggested-name) ; save
