@@ -143,7 +143,7 @@ sorted by modification time. Shows all files if search string is empty."
 	      (when (derived-mode-p 'org-mode)
 		(org-cycle))
 	      (set-buffer-modified-p nil)
-	      (end-of-buffer))))
+	      (goto-char (point-max)))))
       (message "No matching files found."))))
 
 (global-set-key (kbd "C-c l s") 'llm-chat-search-completion)
