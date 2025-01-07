@@ -1,27 +1,9 @@
-(use-package gptel-org
-  :ensure nil
-  :custom
-  ;; use whole doc by default
-  (gptel-org-branching-context nil)
-  :config
-
-  (progn (declare-function org-element-lineage-map "org-element-ast")
-         (defalias 'gptel-org--element-lineage-map 'org-element-lineage-map))
-
-  (defun gptel-org-toggle-branching-context ()
-    "Toggle gptel context between doc and subheading."
-    (interactive)
-    (if gptel-org-branching-context
-        (progn
-          (setq-local gptel-org-branching-context nil)
-          (message "Context: whole doc"))
-      (setq-local gptel-org-branching-context t)
-      (message "Context: subheading"))))
-
 (use-package gptel
   :defer nil
   :ensure t
   :custom
+  ;; use whole doc by default
+  (gptel-org-branching-context nil)
   (gptel-default-mode 'org-mode)
   :init
   (require 'cl-lib)
@@ -106,17 +88,32 @@
       (setq gptel-model (intern model-name))
       (message "GPTel model set to: %s:%s" (symbol-name backend-sym) model-name)))
   
-  :config
+  :config  
   (setq gptel-use-tools t)
   (setq gptel-track-media t)
   (gptel-ensure-backends)
+
+  (progn (declare-function org-element-lineage-map "org-element-ast")
+         (defalias 'gptel-org--element-lineage-map 'org-element-lineage-map))
+
+
+  (defun gptel-org-toggle-branching-context ()
+    "Toggle gptel context between doc and subheading."
+    (interactive)
+    (if gptel-org-branching-context
+        (progn
+          (setq-local gptel-org-branching-context nil)
+          (message "Context: whole doc"))
+      (setq-local gptel-org-branching-context t)
+      (message "Context: subheading")))
+  
   (add-hook 'gptel-mode-hook 'gptel-ensure-backends)
 
   (global-set-key (kbd "C-c g g") 'gptel)
   (global-set-key (kbd "C-c g M") 'gptel-set-model)
   (global-set-key (kbd "C-c g m") 'gptel-menu)
   (global-set-key (kbd "C-c g a") 'gptel-add)
-  (global-set-key (kbd "C-c g b") 'gptel-org-branching-context)
+  (global-set-key (kbd "C-c g b") 'gptel-org-toggle-branching-context)
   ;; (global-set-key (kbd "s-<return>") 'gptel-send)
 
   (setq gptel-directives
