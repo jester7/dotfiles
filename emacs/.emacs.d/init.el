@@ -1,8 +1,10 @@
 (use-package ef-themes
   :ensure t
-  :defer t
+  :defer nil
   :init
-  (load-theme 'ef-dark t))
+  (if (display-graphic-p)
+      (load-theme 'ef-dark t)
+    (load-theme 'ef-elea-dark t)))
 
 (setq custom-file "~/.emacs.d/custom-file.el")
 (load-file custom-file)
