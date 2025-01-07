@@ -74,17 +74,19 @@ export SUDO_EDITOR="emacsclient -c -n"
 export STARSHIP_CONFIG="$HOME/.config/starship/starship.toml"
 eval "$(starship init zsh)"
 
+fastfetch
+
 image_path="$HOME/.config/fastfetch/images/black-clover-5-leaf-clover.png"
 
 # Check the value of $TERM_PROGRAM
-case "$TERM_PROGRAM" in
-    "iTerm.app")
-        fastfetch --iterm "$image_path"
-        ;;
-    "wezterm"|"kitty"|"ghostty")
-        fastfetch --kitty "$image_path"
-        ;;
-    *)
-       fastfetch
-        ;;
-esac
+# case "$TERM_PROGRAM" in
+#     "iTerm.app")
+#         fastfetch --iterm "$image_path"
+#         ;;
+#     "wezterm"|"kitty"|"ghostty")
+#         fastfetch --kitty "$image_path"
+#         ;;
+#     *)
+#        fastfetch
+#         ;;
+# esac
