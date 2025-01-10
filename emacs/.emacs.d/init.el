@@ -605,7 +605,6 @@ If the new path's directories does not exist, create them."
 
 (global-set-key (kbd "C-x 5 6") 'tear-off-window)
 
-(global-set-key (kbd "C-c t") 'treemacs)
 (global-set-key (kbd "M-s-s") 'mark-end-of-sentence)
 (global-set-key (kbd "C-c m m") 'minimap-mode)
 (global-set-key (kbd "M-o") 'other-window)
@@ -628,7 +627,7 @@ If the new path's directories does not exist, create them."
   :ensure t
   :defer t
   :custom
-  (treemacs-is-never-other-window nil)
+  (treemacs-is-never-other-window t)
   (treemacs-space-between-root-nodes nil)
   :config
   (treemacs-git-commit-diff-mode t)
@@ -660,11 +659,20 @@ If the new path's directories does not exist, create them."
 	treemacs-width 30
 	treemacs-width-increment 1
 	treemacs-show-hidden-files t)
-  (treemacs-hide-gitignored-files-mode t))
+  (treemacs-hide-gitignored-files-mode t)
+  :bind
+  (:map global-map
+        ("M-0"       . treemacs-select-window)
+	("s-b t t"   . treemacs-select-window)
+        ("s-b t d"   . treemacs-select-directory)
+        ("s-b t b"   . treemacs-bookmark)
+        ("s-b t f" . treemacs-find-file)))
+
+(use-package treemacs-magit
+  :ensure t
+  :after (treemacs magit))
 
 ;; (load "~/.emacs.d/jester/tabs-config")
-
-;(setq treemacs-width 40)
 
 ;; (use-package treesit-auto
 ;;   :ensure t
@@ -727,6 +735,10 @@ If the new path's directories does not exist, create them."
 
 ;; (global-set-key "\M-n" 'scroll-up-in-place)
 ;; (global-set-key "\M-p" 'scroll-down-in-place)
+
+;; (global-set-key "\M-N" 'scroll-other-window-down)
+;; (global-set-key "\M-P" 'scroll-other-window)
+
 
 ;; (use-package copilot
 ;;   :defer t
