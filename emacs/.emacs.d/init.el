@@ -737,8 +737,26 @@ If the new path's directories does not exist, create them."
 ;; (global-set-key "\M-n" 'scroll-up-in-place)
 ;; (global-set-key "\M-p" 'scroll-down-in-place)
 
-;; (global-set-key "\M-N" 'scroll-other-window-down)
-;; (global-set-key "\M-P" 'scroll-other-window)
+(defun scroll-all-windows-up (&optional arg)
+  "Scroll all windows in the current frame up by ARG lines."
+  (interactive "p")
+  (walk-windows (lambda (window)
+                  (with-selected-window window
+                    (scroll-up arg)))
+                nil t))
+
+(defun scroll-all-windows-down (&optional arg)
+  "Scroll all windows in the current frame down by ARG lines."
+  (interactive "p")
+  (walk-windows (lambda (window)
+                  (with-selected-window window
+                    (scroll-down arg)))
+                nil t))
+
+(global-set-key "\M-N" (lambda (arg) (interactive "p") (scroll-other-window arg)))
+(global-set-key "\M-P" (lambda (arg) (interactive "p") (scroll-other-window-down arg)))
+(global-set-key (kbd "C-M-s-n") 'scroll-all-windows-up)
+(global-set-key (kbd "C-M-s-p") 'scroll-all-windows-down)
 
 
 ;; (use-package copilot
