@@ -666,6 +666,7 @@ If the new path's directories does not exist, create them."
 	("s-b t t"   . treemacs)
         ("s-b t d"   . treemacs-select-directory)
         ("s-b t b"   . treemacs-bookmark)
+	("s-b t w"   . treemacs-switch-workspace)
         ("s-b t f" . treemacs-find-file)))
 
 (use-package treemacs-magit
