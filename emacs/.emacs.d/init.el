@@ -150,7 +150,7 @@
 (global-set-key (kbd "C-M-s-B") 'consult-buffer)
 (global-set-key (kbd "M-s-x s") 'ace-swap-window)
 (global-set-key (kbd "C-x 4 4") 'ace-delete-window)
-(global-set-key (kbd "C-x 5 x") 'delete-frame-killing-buffer)
+(global-set-key (kbd "C-x 5 k") 'delete-frame-killing-buffer)
 (global-set-key (kbd "M-s-o") 'other-frame)
 (global-set-key (kbd "M-s-p") 'previous-buffer)
 (global-set-key (kbd "M-s-n") 'next-buffer)
@@ -614,7 +614,7 @@ If the new path's directories does not exist, create them."
 (global-set-key (kbd "s-b b") 'switch-to-buffer)
 (global-set-key (kbd "s-b d") 'dired-jump)
 (global-set-key (kbd "s-K") 'kill-current-buffer)
-(global-set-key (kbd "s-k") 'kill-buffer-and-window)
+(global-set-key (kbd "s-k") 'delete-frame-killing-buffer)
 (global-set-key (kbd "s-b m") 'switch-to-minibuffer)
 (global-set-key (kbd "C-c f") 'comint-dynamic-complete-filename)
 (global-set-key (kbd "s-r") 'rgrep)
@@ -860,7 +860,7 @@ If the new path's directories does not exist, create them."
 (global-set-key (kbd "C-c u") 'browse-unity-manual)
 
 ;; key binding for kill buffer and window
-(global-set-key (kbd "<f4>") 'kill-buffer-and-window)
+(global-set-key (kbd "C-x K") 'kill-buffer-and-window)
 
 (defun delete-frame-killing-buffer ()
   "Delete the current frame and kill the buffer."
@@ -901,15 +901,15 @@ If displacement is not provided, defaults to 10 pixels."
   (let ((frame (or frame (selected-frame)))
 	(frame-pos (frame-position))
         (start-time (current-time))
-        (duration (or duration 0.10))  ; shake duration in seconds
-        (displacement (or displacement 10)))  ; displacement in pixels
+        (duration (or duration 0.30))  ; shake duration in seconds
+        (displacement (or displacement 12)))  ; displacement in pixels
     (catch 'exit
       (while (< (float-time (time-since start-time)) duration)
         (set-frame-position (selected-frame)
                              (+ (car frame-pos) (random displacement))
                              (+ (cdr frame-pos) (random displacement)))
         (redisplay t)
-        (sit-for 0.01))
+        (sit-for 0.015))
       (set-frame-position (selected-frame) (car frame-pos) (cdr frame-pos)))))
 
 (setq visible-bell nil
@@ -1037,6 +1037,8 @@ If displacement is not provided, defaults to 10 pixels."
   :bind (("M-$" . jinx-correct)
          ("C-M-$" . jinx-languages)))
 
+(set-input-method "spanish-prefix")
+(toggle-input-method)
 
 (use-package org-modern
   :ensure t
