@@ -663,7 +663,7 @@ If the new path's directories does not exist, create them."
   :bind
   (:map global-map
         ("M-0"       . treemacs-select-window)
-	("s-b t t"   . treemacs-select-window)
+	("s-b t t"   . treemacs)
         ("s-b t d"   . treemacs-select-directory)
         ("s-b t b"   . treemacs-bookmark)
         ("s-b t f" . treemacs-find-file)))
