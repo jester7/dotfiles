@@ -10,11 +10,14 @@ keybind = global:ctrl+grave_accent=toggle_quick_terminal
 window-title-font-family = Darkmode Mono On XBold
 font-family = Darkmode Mono On
 font-size = 15
-theme = Tomorrow Night
+
+# theme = Tomorrow Night
+theme = Tomorrow Night Eighties
+background = 121216
 
 adjust-cell-height = 1%
-background-opacity = 0.84
-background-blur-radius = 14
+background-opacity = 0.85
+background-blur-radius = 20
 # unfocused-split-fill = 343434
 unfocused-split-opacity = 0.34
 
