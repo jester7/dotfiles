@@ -41,7 +41,10 @@
 				    :models '("meta-llama/Llama-3.3-70B-Instruct"
 					      "meta-llama/Llama-3.3-70B-Instruct-Turbo"
 					      "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo"
+					      "meta-llama/Meta-Llama-3.1-405B-Instruct"
+					      "deepseek-ai/DeepSeek-V3"
 					      "Qwen/QwQ-32B-Preview"
+					      "Qwen/QVQ-72B-Preview"
 					      "Qwen/Qwen2.5-72B-Instruct"
 					      "Qwen/Qwen2.5-Coder-32B-Instruct")))
     
@@ -50,6 +53,7 @@
 				   :key (my-get-api-key "together")
 				   :stream t
 				   :models '("meta-llama/Llama-3.3-70B-Instruct-Turbo"
+					     "deepseek-ai/DeepSeek-V3"
 					     "codellama/CodeLlama-34b-Instruct-hf"))))
 
   (defun gptel-ensure-backends ()
