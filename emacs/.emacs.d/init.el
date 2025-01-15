@@ -369,7 +369,10 @@ If the new path's directories does not exist, create them."
   ;; disable blinking cursor in dashboard mode
   (dashboard-mode . (lambda ()
 		      (setq-local blink-cursor-mode nil)))
-  :custom  
+  :custom
+  (dashboard-agenda-prefix-format " %i %s ")
+  (dashboard-agenda-item-icon "🗓️")
+  (dashboard-agenda-release-buffers t)
   (dashboard-startup-banner (jester/random-background-image))
   (dashboard-banner-logo-title nil)
   (dashboard-center-content t)
