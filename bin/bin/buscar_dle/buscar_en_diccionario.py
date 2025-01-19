@@ -39,7 +39,7 @@ def get_rae_definition(word):
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print("Usage: python buscar_en_drae.py <word>", file=sys.stderr)
+        print("Uso: python buscar_en_diccionario.py <palabra>", file=sys.stderr)
         sys.exit(1)
     
     word = sys.argv[1]
@@ -47,5 +47,5 @@ if __name__ == "__main__":
     if definition:
         print(definition)
     else:
-        print(f"Could not find definition for {word}", file=sys.stderr)
+        print(f"No se encontró definición para la palabra {word}", file=sys.stderr)
         sys.exit(1)
