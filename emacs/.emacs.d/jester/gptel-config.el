@@ -52,7 +52,7 @@
 				   :host "api.together.xyz"
 				   :key (my-get-api-key "together")
 				   :stream t
-				   :models '("meta-llama/Llama-3.3-70B-Instruct-Turbo"
+				   :models '("meta-llama/Llama-3.3-70B-Instruct-Turbo-Free"
 					     "deepseek-ai/DeepSeek-V3"
 					     "codellama/CodeLlama-34b-Instruct-hf"))))
 
