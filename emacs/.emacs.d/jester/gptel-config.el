@@ -43,6 +43,8 @@
 					      "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo"
 					      "meta-llama/Meta-Llama-3.1-405B-Instruct"
 					      "deepseek-ai/DeepSeek-V3"
+					      "deepseek-ai/DeepSeek-R1"
+					      "deepseek-ai/DeepSeek-R1-Distill-Llama-70B"
 					      "Qwen/QwQ-32B-Preview"
 					      "Qwen/QVQ-72B-Preview"
 					      "Qwen/Qwen2.5-72B-Instruct"
@@ -54,6 +56,7 @@
 				   :stream t
 				   :models '("meta-llama/Llama-3.3-70B-Instruct-Turbo-Free"
 					     "deepseek-ai/DeepSeek-V3"
+					     "deepseek-ai/DeepSeek-R1"
 					     "codellama/CodeLlama-34b-Instruct-hf"))))
 
   (defun gptel-ensure-backends ()
