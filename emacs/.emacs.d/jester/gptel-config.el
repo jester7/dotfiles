@@ -30,7 +30,7 @@
 					   "gemini-1.5-flash"
 					   "gemini-1.5-flash-8b"
 					   "gemini-exp-1206"
-					   "gemini-2.0-flash-thinking-exp-1219"
+					   "gemini-2.0-flash-thinking-exp-01-21"
 					   "gemini-2.0-flash-exp")))
     
     (setq gptel-backend-deepinfra (gptel-make-openai "deepinfra"
