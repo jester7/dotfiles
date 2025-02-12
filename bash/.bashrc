@@ -44,15 +44,17 @@ show_cloud_banner() {
     echo ""
 }
 
-show_cloud_banner
+if [[ $- == *i* ]]; then
 
-# Starship config
-export STARSHIP_CONFIG="$HOME/.config/starship/starship.toml"
-eval "$(starship init bash)"
+    show_cloud_banner
 
-# fastfetch info
-image_path="$HOME/.config/fastfetch/images/black-clover-5-leaf-clover.png"
-fastfetch --kitty "$image_path"
+    # Starship config
+    export STARSHIP_CONFIG="$HOME/.config/starship/starship.toml"
+    eval "$(starship init bash)"
 
+    # fastfetch info
+    image_path="$HOME/.config/fastfetch/images/black-clover-5-leaf-clover.png"
+    fastfetch --kitty "$image_path"
+fi
 # Shared configurations
 

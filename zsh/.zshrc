@@ -44,8 +44,6 @@ show_cloud_banner() {
     print 
 }
 
-show_cloud_banner
-
 export PATH="/usr/local/opt/openjdk/bin:$PATH"
 
 export DOTNET_ROOT="$HOMEBREW_PREFIX/opt/dotnet/libexec"
@@ -71,22 +69,26 @@ export PATH="/usr/local/opt/curl/bin:$PATH:$HOME/bin"
 
 export SUDO_EDITOR="emacsclient -c -n"
 
-export STARSHIP_CONFIG="$HOME/.config/starship/starship.toml"
-eval "$(starship init zsh)"
+if [[ -o interactive ]]; then
+    show_cloud_banner
 
-fastfetch
+    export STARSHIP_CONFIG="$HOME/.config/starship/starship.toml"
+    eval "$(starship init zsh)"
 
-image_path="$HOME/.config/fastfetch/images/black-clover-5-leaf-clover.png"
+    fastfetch
 
-# Check the value of $TERM_PROGRAM
-# case "$TERM_PROGRAM" in
-#     "iTerm.app")
-#         fastfetch --iterm "$image_path"
-#         ;;
-#     "wezterm"|"kitty"|"ghostty")
-#         fastfetch --kitty "$image_path"
-#         ;;
-#     *)
-#        fastfetch
-#         ;;
-# esac
+    image_path="$HOME/.config/fastfetch/images/black-clover-5-leaf-clover.png"
+
+    # Check the value of $TERM_PROGRAM
+    # case "$TERM_PROGRAM" in
+    #     "iTerm.app")
+    #         fastfetch --iterm "$image_path"
+    #         ;;
+    #     "wezterm"|"kitty"|"ghostty")
+    #         fastfetch --kitty "$image_path"
+    #         ;;
+    #     *)
+    #        fastfetch
+    #         ;;
+    # esac
+fi
