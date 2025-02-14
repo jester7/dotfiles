@@ -1079,6 +1079,9 @@ If displacement is not provided, defaults to 10 pixels."
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
 
+(use-package csv-mode
+  :ensure t
+  :defer t)
 
 (desktop-save-mode 1)
 (setq desktop-restore-eager 2)
