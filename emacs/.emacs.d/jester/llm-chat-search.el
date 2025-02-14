@@ -146,12 +146,12 @@ sorted by modification time. Shows all files if search string is empty."
 	      (goto-char (point-max)))))
       (message "No matching files found."))))
 
-(defcustom llm-chat-filename-suggester-backend gptel-backend-together
+(defcustom llm-chat-filename-suggester-backend gptel-backend-deepinfra
   "Backend to use for generating filename suggestions."
   :type 'variable
   :group 'gptel)
 
-(defcustom llm-chat-filename-suggester-model "meta-llama/Llama-3.3-70B-Instruct-Turbo-Free"
+(defcustom llm-chat-filename-suggester-model "meta-llama/Llama-3.3-70B-Instruct-Turbo"
   "Model to use for generating filename suggestions."
   :type 'string
   :group 'gptel)
