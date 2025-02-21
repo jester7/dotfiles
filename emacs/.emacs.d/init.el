@@ -1083,5 +1083,9 @@ If displacement is not provided, defaults to 10 pixels."
   :ensure t
   :defer t)
 
+(use-package eldoc-box
+  :ensure t
+  :defer t)
+
 (desktop-save-mode 1)
 (setq desktop-restore-eager 2)
