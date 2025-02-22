@@ -13,8 +13,8 @@
 ;; (require 'quelpa-use-package)
 
 ;; (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-(add-to-list 'package-archives
-             '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+;; (add-to-list 'package-archives
+;;              '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 
 (defvar my-package-archive '("melpa-stable" . "https://stable.melpa.org/packages/"))
 ;; (defvar my-package-archive '("melpa" . "https://melpa.org/packages/"))
