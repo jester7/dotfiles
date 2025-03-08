@@ -14,12 +14,12 @@
                                  :host "api.openai.com"
                                  :key (my-get-api-key "openai")
                                  :stream t
-                                 :models '("o1-preview" "o1-mini" "gpt-4o-mini" "gpt-4o")))
+                                 :models '("o1-preview" "o1-mini" "gpt-4o-mini" "gpt-4o" "o3-mini")))
     
     (setq gptel-backend-claude (gptel-make-anthropic "Claude"
                                  :key (my-get-api-key "claude")
                                  :stream t
-                                 :models '("claude-3-5-sonnet-20241022"
+                                 :models '("claude-3-7-sonnet-20250219"
 					   "claude-3-5-haiku-20241022"
 					   "claude-3-opus-20240229")))
     
@@ -45,9 +45,10 @@
 					      "meta-llama/Meta-Llama-3.1-405B-Instruct"
 					      "deepseek-ai/DeepSeek-V3"
 					      "deepseek-ai/DeepSeek-R1"
+					      "deepseek-ai/DeepSeek-R1-Turbo"
 					      "deepseek-ai/DeepSeek-R1-Distill-Llama-70B"
-					      "Qwen/QwQ-32B-Preview"
-					      "Qwen/QVQ-72B-Preview"
+					      "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B"
+					      "Qwen/QwQ-32B"
 					      "Qwen/Qwen2.5-72B-Instruct"
 					      "Qwen/Qwen2.5-Coder-32B-Instruct")))
     
@@ -164,6 +165,23 @@ Responde sólo con el texto suficiente para completar la oración o el párrafo 
 
 (setq gptel-tools
       (list
+       ;; apply diff tool
+       (gptel-make-tool
+	:function (lambda (filepath diff)
+		    (let ((command (format "patch %s <<EOF\n%s\nEOF"
+					   (shell-quote-argument (expand-file-name filepath))
+					   diff))
+			  (output (shell-command-to-string command)))
+		      (format "Patch output: %s" output)))
+	:name "apply_diff_to_file"
+	:description "Update an existing file by applying a unified diff."
+	:args (list '(:name "filepath"
+			    :type "string"
+			    :description "Path to the file to update")
+		    '(:name "diff"
+			    :type "string"
+			    :description "The unified diff content to apply. This should be in the format produced by `diff -u file1 file2` or `git diff file1 file2`.")))
+
        ;; URL reading tool
        (gptel-make-tool
 	:function (lambda (url)
@@ -178,37 +196,37 @@ Responde sólo con el texto suficiente para completar la oración o el párrafo 
 			    :description "The URL to read")))
 
        ;; Echo to scratch tool
-       (gptel-make-tool
-        :function (lambda (text)
-                    (with-current-buffer "*scratch*"
-                      (goto-char (point-max))
-                      (insert (format "%s\n" text)))
-                    (format "Appended to scratch: %s" text))
-        :name "echo_scratch"
-        :description "Append a message to the *scratch* buffer"
-        :args (list '(:name "text"
-			    :type "string"
-			    :description "The text to append to the scratch buffer")))
+       ;; (gptel-make-tool
+       ;;  :function (lambda (text)
+       ;;              (with-current-buffer "*scratch*"
+       ;;                (goto-char (point-max))
+       ;;                (insert (format "%s\n" text)))
+       ;;              (format "Appended to scratch: %s" text))
+       ;;  :name "echo_scratch"
+       ;;  :description "Append a message to the *scratch* buffer"
+       ;;  :args (list '(:name "text"
+       ;; 			    :type "string"
+       ;; 			    :description "The text to append to the scratch buffer")))
        
        ;; Message buffer logging tool
-       (gptel-make-tool
-        :function (lambda (text)
-                    (message "%s" text)
-                    (format "Message sent: %s" text))
-        :name "echo_message"
-        :description "Send a message to the *Messages* buffer"
-        :args (list '(:name "text"
-			    :type "string"
-			    :description "The text to send to the messages buffer")))
+       ;; (gptel-make-tool
+       ;;  :function (lambda (text)
+       ;;              (message "%s" text)
+       ;;              (format "Message sent: %s" text))
+       ;;  :name "echo_message"
+       ;;  :description "Send a message to the *Messages* buffer"
+       ;;  :args (list '(:name "text"
+       ;; 			    :type "string"
+       ;; 			    :description "The text to send to the messages buffer")))
        
        ;; Scratch buffer retrieval tool
-       (gptel-make-tool
-        :function (lambda ()
-                    (with-current-buffer "*scratch*"
-                      (buffer-substring-no-properties (point-min) (point-max))))
-        :name "get_scratch_buffer"
-        :description "Return the contents of the *scratch* buffer"
-        :args nil)
+       ;; (gptel-make-tool
+       ;;  :function (lambda ()
+       ;;              (with-current-buffer "*scratch*"
+       ;;                (buffer-substring-no-properties (point-min) (point-max))))
+       ;;  :name "get_scratch_buffer"
+       ;;  :description "Return the contents of the *scratch* buffer"
+       ;;  :args nil)
        
 
        (gptel-make-tool
