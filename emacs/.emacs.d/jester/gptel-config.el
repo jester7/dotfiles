@@ -168,19 +168,37 @@ Responde sólo con el texto suficiente para completar la oración o el párrafo 
        ;; apply diff tool
        (gptel-make-tool
 	:function (lambda (filepath diff)
-		    (let ((command (format "patch %s <<EOF\n%s\nEOF"
-					   (shell-quote-argument (expand-file-name filepath))
-					   diff))
-			  (output (shell-command-to-string command)))
-		      (format "Patch output: %s" output)))
+		    (let* ((filepath (expand-file-name filepath))
+			   (temp-diff-file (make-temp-file "gptel-diff-"))
+			   (result-buffer (get-buffer-create "*gptel-patch-output*")))
+		      (unwind-protect
+			  (progn
+			    ;; Write the diff to a temporary file.
+			    (with-temp-file temp-diff-file
+			      (insert diff))
+
+			    ;; Run patch, capturing output and error.
+			    (let ((status (call-process "patch" nil result-buffer t filepath "-i" temp-diff-file)))
+			      (with-current-buffer result-buffer
+				(let ((output (buffer-string))  ; Get all output (stdout and stderr).
+				      (success (zerop status))) ; Check exit code.
+				  ;; Construct a structured result.
+				  (list :success success
+					:output output
+					:status status
+					:filepath filepath)))))
+			;; Cleanup:  Delete the temporary file, even if errors occur.
+			(delete-file temp-diff-file)
+			(kill-buffer result-buffer))))
 	:name "apply_diff_to_file"
 	:description "Update an existing file by applying a unified diff."
 	:args (list '(:name "filepath"
 			    :type "string"
 			    :description "Path to the file to update")
-		    '(:name "diff"
+                    '(:name "diff"
 			    :type "string"
-			    :description "The unified diff content to apply. This should be in the format produced by `diff -u file1 file2` or `git diff file1 file2`.")))
+			    :description
+			    "The unified diff content to apply. This should be in the format produced by `diff -u file1 file2` or `git diff file1 file2`.")))
 
        ;; URL reading tool
        (gptel-make-tool
