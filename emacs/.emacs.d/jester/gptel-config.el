@@ -315,4 +315,23 @@ Responde sólo con el texto suficiente para completar la oración o el párrafo 
         :description "Show a tree view of the specified directory"
         :args (list '(:name "directory"
 			    :type "string"
-			    :description "The directory to show the tree view for")))))
+			    :description "The directory to show the tree view for")))
+       
+       (gptel-make-tool
+	:function (lambda (filepath content)
+		    (let ((filepath (expand-file-name filepath)))
+		      (if (file-exists-p filepath)
+			  (progn
+			    (with-temp-buffer
+			      (insert content)
+			      (write-file filepath))
+			    (format "Successfully overwrote existing file %s" filepath))
+			(format "Error: File %s does not exist. Use create_file tool instead." filepath))))
+	:name "overwrite_file"
+	:description "Overwrite an existing file with new content (file must already exist)"
+	:args (list '(:name "filepath"
+			    :type "string"
+			    :description "Path to the existing file to overwrite (supports relative paths and ~)")
+		    '(:name "content"
+			    :type "string"
+			    :description "The new content to write to the file")))))
