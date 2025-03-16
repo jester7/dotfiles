@@ -65,7 +65,7 @@ alias -g listports="lsof -i -P -n | grep LISTEN"
 killgrep() {
   ps aux | grep $1 | awk '{print $2}' | xargs kill -9
 }
-export PATH="/usr/local/opt/curl/bin:$PATH:$HOME/bin"
+export PATH="/usr/local/opt/curl/bin:$PATH:$HOME/bin:/usr/local/opt/postgresql@17/bin"
 
 export SUDO_EDITOR="emacsclient -c -n"
 
