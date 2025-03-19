@@ -1,3 +1,6 @@
+# Source os detection flags script
+source "$HOME/os_detect.sh"
+
 # Source machine-specific config if it exists
 [[ -f ~/.bashrc-$HOSTNAME ]] && source ~/.bashrc-$HOSTNAME
 
