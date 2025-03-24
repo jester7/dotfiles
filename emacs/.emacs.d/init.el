@@ -365,7 +365,7 @@ If the new path's directories does not exist, create them."
   (dashboard-footer ((t (:family "Ingra" :height 1.0 :weight medium))))
   :config
   (dashboard-setup-startup-hook)
-  :hook
+  ;; :hook
   ;; disable blinking cursor in dashboard mode
   ;; (dashboard-mode . (lambda ()
   ;; 		      (setq-local blink-cursor-mode nil)))
