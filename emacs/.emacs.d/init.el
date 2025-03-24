@@ -367,8 +367,8 @@ If the new path's directories does not exist, create them."
   (dashboard-setup-startup-hook)
   :hook
   ;; disable blinking cursor in dashboard mode
-  (dashboard-mode . (lambda ()
-		      (setq-local blink-cursor-mode nil)))
+  ;; (dashboard-mode . (lambda ()
+  ;; 		      (setq-local blink-cursor-mode nil)))
   :custom
   (dashboard-agenda-prefix-format " %i %s ")
   (dashboard-agenda-item-icon "🗓️")
