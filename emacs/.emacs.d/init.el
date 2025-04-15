@@ -1,3 +1,6 @@
+(require 'package)
+(package-initialize)
+
 (use-package ef-themes
   :ensure t
   :defer nil
@@ -9,7 +12,6 @@
 (setq custom-file "~/.emacs.d/custom-file.el")
 (load-file custom-file)
 
-(require 'package)
 ;; (require 'quelpa-use-package)
 
 ;; (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
@@ -1091,6 +1093,13 @@ If displacement is not provided, defaults to 10 pixels."
   :ensure t
   :defer t
   :hook (sql-mode . sqlind-minor-mode))
+
+(use-package css-mode
+  :ensure t
+  :defer t
+  :config
+  (setq indent-tabs-mode nil)
+  (setq css-indent-offset 2))
 
 (desktop-save-mode 1)
 (setq desktop-restore-eager 2)

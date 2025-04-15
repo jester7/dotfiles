@@ -1,6 +1,6 @@
 ;; (setq-default abbrev-mode t)
 
-(setq save-abbrevs 'silently)
+(setq save-abbrevs nil)
 
 (add-hook 'mhtml-mode-hook #'abbrev-mode)
 (add-hook 'css-mode-hook #'abbrev-mode)
@@ -14,15 +14,15 @@
 
 
 (define-abbrev-table 'css-mode-abbrev-table
-  '(("flex" "display: flex;\n    justify-content: center;\n    align-items: center;")
-    ("grid" "display: grid;\n    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));")
-    ("pos" "position: absolute;\n    top: 0;\n    left: 0;")
-    ("ani" "@keyframes name {\n    0% { }\n    100% { }\n}")
-    ("mq" "" css-media-query)
-    ("html" "" (lambda () (skeleton-insert '(nil "html { " _ "; }"))))
-    ("box" "box-sizing: border-box;\n    padding: 0;\n    margin: 0;")
-    ("boxshad" "box-shadow: 1px 1px 4px rgba(0,0,0,0.5);")
-    ("trans" "transition: all 0.3s ease;")))
+  '(("flexx" "display: flex;\n    justify-content: center;\n    align-items: center;")
+    ("gridd" "display: grid;\n    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));")
+    ("poss" "position: absolute;\n    top: 0;\n    left: 0;")
+    ("anii" "@keyframes name {\n    0% { }\n    100% { }\n}")
+    ("mqq" "" css-media-query)
+    ("htmll" "" (lambda () (skeleton-insert '(nil "html { " _ "; }"))))
+    ("boxx" "box-sizing: border-box;\n    padding: 0;\n    margin: 0;")
+    ("boxshadd/" "box-shadow: 1px 1px 4px rgba(0,0,0,0.5);")
+    ("transs" "transition: all 0.3s ease;")))
 
 ;; (define-abbrev-table 'html-mode-abbrev-table
 ;;   '(("<a" "<a href=\"\">" _ "</a>")

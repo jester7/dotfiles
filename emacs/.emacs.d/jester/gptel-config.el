@@ -7,7 +7,6 @@
   (gptel-default-mode 'org-mode)
   :init
   (require 'cl-lib)
-
   (defun gptel-init-backends ()
     "Initialize GPTel backends."
     (setq gptel-backend-openai (gptel-make-openai "OpenAI"
@@ -26,9 +25,10 @@
     (setq gptel-backend-gemini (gptel-make-gemini "Gemini"
 				 :key (my-get-api-key "gemini")
 				 :stream t
-				 :models '("gemini-2.0-flash"
+				 :models '("gemini-2.5-pro-exp-03-25"
+					   "gemini-2.5-pro-preview-03-25"
+					   "gemini-2.0-flash"
 					   "gemini-2.0-flash-lite-preview-02-05"
-					   "gemini-2.5-pro-exp-03-25"
 					   "gemini-2.0-flash-thinking-exp-01-21"
 					   "gemini-1.5-pro"
 					   "gemini-1.5-flash"
@@ -65,7 +65,7 @@
     "Ensure GPTel backends are initialized and set a default backend."
     (unless (bound-and-true-p gptel-backend-openai)
       (gptel-init-backends)
-      (setq gptel-backend gptel-backend-claude)
+      (setq gptel-backend gptel-backend-gemini)
       (setq gptel-model (car (gptel-backend-models gptel-backend)))))
 
   (defun gptel-set-model (model-spec)
@@ -101,6 +101,8 @@
   (setq gptel-use-tools t)
   (setq gptel-track-media t)
   (gptel-ensure-backends)
+  (setf (alist-get 'org-mode gptel-prompt-prefix-alist) "@user\n")
+  (setf (alist-get 'org-mode gptel-response-prefix-alist) "@assistant\n")
 
   (progn (declare-function org-element-lineage-map "org-element-ast")
          (defalias 'gptel-org--element-lineage-map 'org-element-lineage-map))
