@@ -18,15 +18,15 @@
     (setq gptel-backend-claude (gptel-make-anthropic "Claude"
                                  :key (my-get-api-key "claude")
                                  :stream t
-                                 :models '("claude-3-7-sonnet-20250219"
+                                 :models '("claude-sonnet-4-20250514"
 					   "claude-3-5-haiku-20241022"
-					   "claude-3-opus-20240229")))
+					   "claude-opus-4-20250514")))
     
     (setq gptel-backend-gemini (gptel-make-gemini "Gemini"
 				 :key (my-get-api-key "gemini")
 				 :stream t
-				 :models '("gemini-2.5-pro-preview-05-06"
-					   "gemini-2.5-flash-preview-04-17"
+				 :models '("gemini-2.5-pro-preview-06-05"
+					   "gemini-2.5-flash-preview-05-20"
 					   "gemini-2.0-flash"
 					   "gemini-2.0-flash-lite"
 					   "gemini-1.5-pro"
