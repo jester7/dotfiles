@@ -25,8 +25,8 @@
     (setq gptel-backend-gemini (gptel-make-gemini "Gemini"
 				 :key (my-get-api-key "gemini")
 				 :stream t
-				 :models '("gemini-2.5-pro-preview-06-05"
-					   "gemini-2.5-flash-preview-05-20"
+				 :models '("gemini-2.5-pro"
+					   "gemini-2.5-flash"
 					   "gemini-2.0-flash"
 					   "gemini-2.0-flash-lite"
 					   "gemini-1.5-pro"
