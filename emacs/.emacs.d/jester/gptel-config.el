@@ -9,29 +9,37 @@
   (require 'cl-lib)
   (defun gptel-init-backends ()
     "Initialize GPTel backends."
+    (setq gptel-backend-xai (gptel-make-xai "xAI"
+			      :key (my-get-api-key "xai")
+			      :stream t
+			      :models '("grok-4-fast-reasoning"
+					"grok-4-fast-non-reasoning"
+					"grok-code-fast-1"
+					"grok-4"
+					"grok-3-mini")))
     (setq gptel-backend-openai (gptel-make-openai "OpenAI"
                                  :host "api.openai.com"
                                  :key (my-get-api-key "openai")
                                  :stream t
-                                 :models '("o1-preview" "o1-mini" "gpt-4o-mini" "gpt-4o" "o3-mini")))
+                                 :models '("gpt-5"
+					   "gpt-5-mini"
+					   "gpt-5-nano"
+					   "gpt-4.1")))
     
     (setq gptel-backend-claude (gptel-make-anthropic "Claude"
                                  :key (my-get-api-key "claude")
                                  :stream t
-                                 :models '("claude-sonnet-4-20250514"
-					   "claude-3-5-haiku-20241022"
-					   "claude-opus-4-20250514")))
+                                 :models '("claude-sonnet-4-5-20250929"
+					   "claude-haiku-4-5-20251001"
+					   "claude-opus-4-1-20250805")))
     
     (setq gptel-backend-gemini (gptel-make-gemini "Gemini"
 				 :key (my-get-api-key "gemini")
 				 :stream t
 				 :models '("gemini-2.5-pro"
-					   "gemini-2.5-flash"
-					   "gemini-2.0-flash"
-					   "gemini-2.0-flash-lite"
-					   "gemini-1.5-pro"
-					   "gemini-1.5-flash"
-					   "gemini-1.5-flash-8b")))
+					   "gemini-flash-latest"
+					   "gemini-flash-lite-latest"
+					   "gemini-2.0-flash-lite")))
     
     (setq gptel-backend-deepinfra (gptel-make-openai "deepinfra"
 				    :host "api.deepinfra.com"
@@ -47,7 +55,7 @@
 					      "deepseek-ai/DeepSeek-R1-Turbo"
 					      "deepseek-ai/DeepSeek-R1-Distill-Llama-70B"
 					      "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B"
-					      "Qwen/QwQ-32B"
+					      "Qwen/Qwen3-Next-80B-A3B-Instruct"
 					      "Qwen/Qwen2.5-72B-Instruct"
 					      "Qwen/Qwen2.5-Coder-32B-Instruct")))
     
@@ -71,7 +79,8 @@
     "Set the gptel model interactively."
     (interactive
      (list (completing-read "Choose model (backend:model): "
-                            (cl-loop for backend-sym in '(gptel-backend-openai
+                            (cl-loop for backend-sym in '(gptel-backend-xai
+							  gptel-backend-openai
 							  gptel-backend-claude
 							  gptel-backend-gemini
 							  gptel-backend-deepinfra
@@ -166,173 +175,349 @@ Responde sólo con el texto suficiente para completar la oración o el párrafo 
 
 (setq gptel-tools
       (list
-       ;; apply diff tool
-       (gptel-make-tool
-	:function (lambda (filepath diff)
-		    (let* ((filepath (expand-file-name filepath))
-			   (temp-diff-file (make-temp-file "gptel-diff-"))
-			   (result-buffer (get-buffer-create "*gptel-patch-output*")))
-		      (unwind-protect
-			  (progn
-			    ;; Write the diff to a temporary file.
-			    (with-temp-file temp-diff-file
-			      (insert diff))
-
-			    ;; Run patch, capturing output and error.
-			    (let ((status (call-process "patch" nil result-buffer t filepath "-i" temp-diff-file)))
-			      (with-current-buffer result-buffer
-				(let ((output (buffer-string))  ; Get all output (stdout and stderr).
-				      (success (zerop status))) ; Check exit code.
-				  ;; Construct a structured result.
-				  (list :success success
-					:output output
-					:status status
-					:filepath filepath)))))
-			;; Cleanup:  Delete the temporary file, even if errors occur.
-			(delete-file temp-diff-file)
-			(kill-buffer result-buffer))))
-	:name "apply_diff_to_file"
-	:description "Update an existing file by applying a unified diff."
-	:args (list '(:name "filepath"
-			    :type "string"
-			    :description "Path to the file to update")
-                    '(:name "diff"
-			    :type "string"
-			    :description
-			    "The unified diff content to apply. This should be in the format produced by `diff -u file1 file2` or `git diff file1 file2`.")))
-
-       ;; URL reading tool
-       (gptel-make-tool
-	:function (lambda (url)
-		    (with-current-buffer (url-retrieve-synchronously url)
-		      (goto-char (point-min))
-		      (re-search-forward "\n\n")
-		      (buffer-substring-no-properties (point) (point-max))))
-	:name "read_url"
-	:description "Fetch and read the contents of a URL"
-	:args (list '(:name "url"
-			    :type "string"
-			    :description "The URL to read")))
-
-       ;; Echo to scratch tool
-       ;; (gptel-make-tool
-       ;;  :function (lambda (text)
-       ;;              (with-current-buffer "*scratch*"
-       ;;                (goto-char (point-max))
-       ;;                (insert (format "%s\n" text)))
-       ;;              (format "Appended to scratch: %s" text))
-       ;;  :name "echo_scratch"
-       ;;  :description "Append a message to the *scratch* buffer"
-       ;;  :args (list '(:name "text"
-       ;; 			    :type "string"
-       ;; 			    :description "The text to append to the scratch buffer")))
+       ;; ===== EMACS/BUFFER TOOLS =====
        
-       ;; Message buffer logging tool
-       ;; (gptel-make-tool
-       ;;  :function (lambda (text)
-       ;;              (message "%s" text)
-       ;;              (format "Message sent: %s" text))
-       ;;  :name "echo_message"
-       ;;  :description "Send a message to the *Messages* buffer"
-       ;;  :args (list '(:name "text"
-       ;; 			    :type "string"
-       ;; 			    :description "The text to send to the messages buffer")))
-       
-       ;; Scratch buffer retrieval tool
-       ;; (gptel-make-tool
-       ;;  :function (lambda ()
-       ;;              (with-current-buffer "*scratch*"
-       ;;                (buffer-substring-no-properties (point-min) (point-max))))
-       ;;  :name "get_scratch_buffer"
-       ;;  :description "Return the contents of the *scratch* buffer"
-       ;;  :args nil)
-       
-
+       ;; Read buffer contents
        (gptel-make-tool
-	:function (lambda (directory)
-		    (shell-command-to-string 
-		     (format "ls %s" 
-			     (shell-quote-argument 
-			      (expand-file-name directory)))))
-	:name "list_directory"
-	:description "List the contents of a given directory"
-	:args (list '(:name "directory"
-			    :type "string"
-			    :description "The path to the directory to list")))
-       
-       (gptel-make-tool
-        :function (lambda (parent name)
-                    (condition-case nil
-                        (progn
-                          (make-directory (expand-file-name name parent) t)
-                          (format "Directory %s created/verified in %s" name parent))
-                      (error (format "Error creating directory %s in %s" name parent))))
-        :name "make_directory"
-        :description "Create a new directory with the given name in the specified parent directory"
-        :args (list '(:name "parent"
-			    :type "string"
-			    :description "The parent directory where the new directory should be created")
-                    '(:name "name"
-			    :type "string"
-			    :description "The name of the new directory to create")))
+        :function (lambda (buffer)
+                    (condition-case err
+                        (if (buffer-live-p (get-buffer buffer))
+                            (with-current-buffer buffer
+                              (buffer-substring-no-properties (point-min) (point-max)))
+                          (format "Error: buffer %s is not live." buffer))
+                      (error (format "Error reading buffer %s: %s" 
+                                     buffer (error-message-string err)))))
+        :name "read_buffer"
+        :description "Return the contents of an Emacs buffer"
+        :args (list '(:name "buffer"
+                            :type "string"
+                            :description "The name of the buffer to read"))
+        :category "emacs")
 
+       ;; Replace entire buffer contents
+       (gptel-make-tool
+        :function (lambda (buffer-name content)
+                    (condition-case err
+                        (if (get-buffer buffer-name)
+                            (with-current-buffer buffer-name
+                              (erase-buffer)
+                              (insert content)
+                              (format "Buffer contents replaced: %s" buffer-name))
+                          (format "Error: Buffer '%s' not found" buffer-name))
+                      (error (format "Error replacing buffer %s: %s"
+                                     buffer-name (error-message-string err)))))
+        :name "replace_buffer"
+        :description "Completely replace all contents of a buffer with new content"
+        :args (list '(:name "buffer-name"
+                            :type "string"
+                            :description "The name of the buffer to replace")
+                    '(:name "content"
+                            :type "string"
+                            :description "The new content for the buffer"))
+        :category "emacs")
+
+       ;; Append to buffer
+       (gptel-make-tool
+        :function (lambda (buffer text)
+                    (condition-case err
+                        (if (buffer-live-p (get-buffer buffer))
+                            (with-current-buffer buffer
+                              (goto-char (point-max))
+                              (insert text)
+                              (format "Successfully appended text to buffer %s." buffer))
+                          (format "Error: buffer %s is not live or does not exist." buffer))
+                      (error (format "Error appending to buffer %s: %s"
+                                     buffer (error-message-string err)))))
+        :name "append_to_buffer"
+        :description "Append text to the end of an Emacs buffer"
+        :args (list '(:name "buffer"
+                            :type "string"
+                            :description "The name of the buffer to append to")
+                    '(:name "text"
+                            :type "string"
+                            :description "The text to append"))
+        :category "emacs")
+
+       ;; Search and replace in buffer
+       (gptel-make-tool
+        :function (lambda (buffer-name search-pattern replacement)
+                    (condition-case err
+                        (with-current-buffer (get-buffer buffer-name)
+                          (save-excursion
+                            (goto-char (point-min))
+                            (let ((count 0))
+                              (while (re-search-forward search-pattern nil t)
+                                (replace-match replacement t)
+                                (setq count (1+ count)))
+                              (format "Replaced %d occurrences in %s" count buffer-name))))
+                      (error (format "Error in search/replace: %s" 
+                                     (error-message-string err)))))
+        :name "buffer_search_replace"
+        :description "Perform regex search and replace in a buffer"
+        :args (list '(:name "buffer-name" :type "string" 
+                            :description "Name of the buffer")
+                    '(:name "search-pattern" :type "string" 
+                            :description "Regex pattern to search for")
+                    '(:name "replacement" :type "string" 
+                            :description "Replacement text"))
+        :category "emacs")
+
+       ;; Get buffer lines
+       (gptel-make-tool
+        :function (lambda (buffer-name start-line end-line)
+                    (condition-case err
+                        (with-current-buffer (get-buffer buffer-name)
+                          (save-excursion
+                            (goto-char (point-min))
+                            (forward-line (1- start-line))
+                            (let ((start (point)))
+                              (forward-line (- end-line start-line -1))
+                              (buffer-substring-no-properties start (point)))))
+                      (error (format "Error getting lines: %s" 
+                                     (error-message-string err)))))
+        :name "get_buffer_lines"
+        :description "Extract specific line range from a buffer"
+        :args (list '(:name "buffer-name" :type "string" :description "Buffer name")
+                    '(:name "start-line" :type "number" :description "Starting line number")
+                    '(:name "end-line" :type "number" :description "Ending line number"))
+        :category "emacs")
+
+       ;; Buffer info
+       (gptel-make-tool
+        :function (lambda (buffer-name)
+                    (condition-case err
+                        (with-current-buffer (get-buffer buffer-name)
+                          (format "Mode: %s | Size: %d bytes | Modified: %s | File: %s"
+                                  (symbol-name major-mode)
+                                  (buffer-size)
+                                  (if (buffer-modified-p) "yes" "no")
+                                  (or buffer-file-name "none")))
+                      (error (format "Error getting buffer info: %s" 
+                                     (error-message-string err)))))
+        :name "buffer_info"
+        :description "Get information about a buffer's state"
+        :args (list '(:name "buffer-name" :type "string" :description "Buffer name"))
+        :category "emacs")
+
+       ;; Read documentation
+       (gptel-make-tool
+        :function (lambda (symbol)
+                    (condition-case err
+                        (let ((sym (intern symbol)))
+                          (cond
+                           ((fboundp sym)
+                            (documentation sym))
+                           ((boundp sym)
+                            (documentation-property sym 'variable-documentation))
+                           (t
+                            (format "No documentation found for %s" symbol))))
+                      (error (format "Error reading documentation for %s: %s" 
+                                     symbol (error-message-string err)))))
+        :name "read_documentation"
+        :description "Read the documentation for a given function or variable"
+        :args (list '(:name "name"
+                            :type "string"
+                            :description "The name of the function or variable"))
+        :category "emacs")
+
+       ;; ===== FILESYSTEM TOOLS =====
+       
+       ;; Read file
+       (gptel-make-tool
+        :function (lambda (filepath)
+                    (condition-case err
+                        (with-temp-buffer
+                          (insert-file-contents (expand-file-name filepath))
+                          (buffer-string))
+                      (error (format "Error reading file %s: %s"
+                                     filepath (error-message-string err)))))
+        :name "read_file"
+        :description "Read and return the contents of a file"
+        :args (list '(:name "filepath"
+                            :type "string"
+                            :description "Path to the file to read"))
+        :category "filesystem")
+
+       ;; Create file
        (gptel-make-tool
         :function (lambda (path filename content)
-                    (let ((full-path (expand-file-name filename path)))
-                      (with-temp-buffer
-                        (insert content)
-                        (write-file full-path))
-                      (format "Created file %s in %s" filename path)))
+                    (condition-case err
+                        (let ((full-path (expand-file-name filename path)))
+                          (with-temp-buffer
+                            (insert content)
+                            (write-file full-path))
+                          (format "Created file %s in %s" filename path))
+                      (error (format "Error creating file %s in %s: %s" 
+                                     filename path (error-message-string err)))))
         :name "create_file"
         :description "Create a new file with the specified content"
         :args (list '(:name "path"
-			    :type "string"
-			    :description "The directory where to create the file")
+                            :type "string"
+                            :description "The directory where to create the file")
                     '(:name "filename"
-			    :type "string"
-			    :description "The name of the file to create")
+                            :type "string"
+                            :description "The name of the file to create")
                     '(:name "content"
-			    :type "string"
-			    :description "The content to write to the file")))
+                            :type "string"
+                            :description "The content to write to the file"))
+        :category "filesystem")
 
+       ;; Overwrite existing file
        (gptel-make-tool
-	:function (lambda (filepath)
-		    (with-temp-buffer
-		      (insert-file-contents (expand-file-name filepath))
-		      (buffer-string)))
-	:name "read_file"
-	:description "Read and display the contents of a file"
-	:args (list '(:name "filepath"
-			    :type "string"
-			    :description "Path to the file to read (supports relative paths and ~)")))
+        :function (lambda (filepath content)
+                    (let ((filepath (expand-file-name filepath)))
+                      (condition-case err
+                          (if (file-exists-p filepath)
+                              (progn
+                                (with-temp-buffer
+                                  (insert content)
+                                  (write-file filepath))
+                                (format "Successfully overwrote existing file %s" filepath))
+                            (format "Error: File %s does not exist. Use create_file tool instead." filepath))
+                        (error (format "Error overwriting file %s: %s"
+                                       filepath (error-message-string err))))))
+        :name "overwrite_file"
+        :description "Overwrite an existing file with new content (file must already exist)"
+        :args (list '(:name "filepath"
+                            :type "string"
+                            :description "Path to the existing file to overwrite")
+                    '(:name "content"
+                            :type "string"
+                            :description "The new content to write to the file"))
+        :category "filesystem")
 
+       ;; Apply diff to file
+       (gptel-make-tool
+        :function (lambda (filepath diff)
+                    (let* ((filepath (expand-file-name filepath))
+                           (temp-diff-file (make-temp-file "gptel-diff-"))
+                           (result-buffer (get-buffer-create "*gptel-patch-output*")))
+                      (unwind-protect
+                          (progn
+                            (with-temp-file temp-diff-file
+                              (insert diff))
+                            (let ((status (call-process "patch" nil result-buffer t 
+                                                       filepath "-i" temp-diff-file)))
+                              (with-current-buffer result-buffer
+                                (let ((output (buffer-string))
+                                      (success (zerop status)))
+                                  (if success
+                                      (format "Successfully applied diff to %s" filepath)
+                                    (format "Failed to apply diff to %s: %s" filepath output))))))
+                        (delete-file temp-diff-file)
+                        (kill-buffer result-buffer))))
+        :name "apply_diff"
+        :description "Apply a unified diff to an existing file"
+        :args (list '(:name "filepath"
+                            :type "string"
+                            :description "Path to the file to update")
+                    '(:name "diff"
+                            :type "string"
+                            :description "The unified diff content to apply"))
+        :category "filesystem")
+
+       ;; Make directory
+       (gptel-make-tool
+        :function (lambda (parent name)
+                    (condition-case err
+                        (progn
+                          (make-directory (expand-file-name name parent) t)
+                          (format "Directory %s created/verified in %s" name parent))
+                      (error (format "Error creating directory %s in %s: %s" 
+                                     name parent (error-message-string err)))))
+        :name "make_directory"
+        :description "Create a new directory"
+        :args (list '(:name "parent"
+                            :type "string"
+                            :description "The parent directory path")
+                    '(:name "name"
+                            :type "string"
+                            :description "The name of the new directory"))
+        :category "filesystem")
+
+       ;; List directory
        (gptel-make-tool
         :function (lambda (directory)
-                    (shell-command-to-string 
-                     (format "bb %s %s" 
-                             (expand-file-name "ls-tree-view.bb" "~/bin")
-                             (shell-quote-argument directory))))
-        :name "list_directory_tree_view"
-        :description "Show a tree view of the specified directory"
+                    (condition-case err
+                        (shell-command-to-string 
+                         (format "ls -la %s" 
+                                 (shell-quote-argument 
+                                  (expand-file-name directory))))
+                      (error (format "Error listing directory %s: %s"
+                                     directory (error-message-string err)))))
+        :name "list_directory"
+        :description "List the contents of a directory"
         :args (list '(:name "directory"
-			    :type "string"
-			    :description "The directory to show the tree view for")))
-       
+                            :type "string"
+                            :description "The path to the directory to list"))
+        :category "filesystem")
+
+       ;; Tree view (your babashka script)
        (gptel-make-tool
-	:function (lambda (filepath content)
-		    (let ((filepath (expand-file-name filepath)))
-		      (if (file-exists-p filepath)
-			  (progn
-			    (with-temp-buffer
-			      (insert content)
-			      (write-file filepath))
-			    (format "Successfully overwrote existing file %s" filepath))
-			(format "Error: File %s does not exist. Use create_file tool instead." filepath))))
-	:name "overwrite_file"
-	:description "Overwrite an existing file with new content (file must already exist)"
-	:args (list '(:name "filepath"
+        :function (lambda (directory)
+                    (condition-case err
+                        (shell-command-to-string 
+                         (format "bb %s %s" 
+                                 (expand-file-name "ls-tree-view.bb" "~/bin")
+                                 (shell-quote-argument directory)))
+                      (error (format "Error generating tree view: %s"
+                                     (error-message-string err)))))
+        :name "tree_view"
+        :description "Show a tree view of the specified directory using custom babashka script"
+        :args (list '(:name "directory"
+                            :type "string"
+                            :description "The directory to show the tree view for"))
+        :category "filesystem")
+
+       ;; ===== COMMAND EXECUTION =====
+       
+       ;; Run shell command
+       (gptel-make-tool
+        :function (lambda (command &optional working-dir)
+                    (let ((default-directory (if (and working-dir 
+                                                      (not (string= working-dir "")))
+                                                 (expand-file-name working-dir)
+                                               default-directory)))
+                      (condition-case err
+                          (shell-command-to-string command)
+                        (error (format "Command failed: %s" 
+                                       (error-message-string err))))))
+        :name "run_command"
+        :description "Execute a shell command and return its output"
+        :args (list '(:name "command"
+                            :type "string"
+                            :description "The shell command to execute")
+                    '(:name "working-dir"
+                            :type "string"
+                            :description "Optional: directory to run the command in"))
+        :category "command")
+
+       ;; ===== WEB TOOLS =====
+       
+       ;; Fetch URL content
+       (gptel-make-tool
+	:function (lambda (url)
+		    (condition-case err
+			(let ((buffer (url-retrieve-synchronously url t nil 10))) ; t=silent, nil=no-cookies, 10=timeout
+			  (if buffer
+			      (unwind-protect
+				  (with-current-buffer buffer
+				    (goto-char (point-min))
+				    (if (re-search-forward "\n\n" nil t)
+					;; SUCCESS: Return a JSON object as an alist
+					(list (cons "content" (buffer-substring-no-properties (point) (point-max))))
+				      ;; ERROR: Return JSON object as alist
+				      (list (cons "error" (format "No HTTP headers found in buffer. Content starts: %s"
+								  (buffer-substring-no-properties (point-min) (min (point-max) 100)))))))
+				(kill-buffer buffer))
+			    ;; ERROR: Return JSON object as alist
+			    (list (cons "error" "url-retrieve-synchronously failed to return a buffer."))))
+		      ;; CATCHALL ERROR: Return JSON object as alist
+		      (error (list (cons "error" (format "Error during URL fetch: %s"
+							 (error-message-string err)))))))
+	:name "fetch_url"
+	:description "Fetch and return the raw content of a URL"
+	:args (list '(:name "url"
 			    :type "string"
-			    :description "Path to the existing file to overwrite (supports relative paths and ~)")
-		    '(:name "content"
-			    :type "string"
-			    :description "The new content to write to the file")))))
+			    :description "The URL to fetch"))
+	:category "web")))
