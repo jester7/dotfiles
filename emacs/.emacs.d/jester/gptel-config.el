@@ -492,6 +492,28 @@ Responde sólo con el texto suficiente para completar la oración o el párrafo 
                             :description "Optional: directory to run the command in"))
         :category "command")
 
+       (gptel-make-tool
+	:function (lambda (query &optional json fully-qualified no-header)
+		    (condition-case err
+			(let ((cmd (format "bb %s %s %s %s %s"
+					   (expand-file-name "pg-query" "~/bin")
+					   (if json "--json" "")
+					   (if fully-qualified "--fully-qualified" "")
+					   (if no-header "--no-header" "")
+					   (shell-quote-argument query))))
+			  (shell-command-to-string cmd))
+		      (error (format "Error executing pg-query: %s"
+				     (error-message-string err)))))
+	:name "pg_query"
+	:description "Run a safe SELECT query on the configured PostgreSQL database. Options: JSON output (--json), fully-qualified column names (--fully-qualified), no CSV header (--no-header)."
+	:args (list
+               '(:name "query" :type "string" :description "The SQL SELECT query to execute")
+               '(:name "json" :type "boolean" :description "Output in JSON format for LLMs")
+               '(:name "fully-qualified" :type "boolean" :description "Preserve table prefixes in CSV output")
+               '(:name "no-header" :type "boolean" :description "Suppress CSV header row"))
+	:category "database")
+
+
        ;; ===== WEB TOOLS =====
        
        ;; Fetch URL content
