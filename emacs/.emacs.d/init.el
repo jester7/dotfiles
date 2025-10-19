@@ -335,12 +335,11 @@ If the new path's directories does not exist, create them."
 (setq lazy-count-suffix-format " (%s/%s)")
 (setq search-whitespace-regexp ".*?")
 
-
-
-(setq mouse-wheel-tilt-scroll t)
-(setq scroll-conservatively 101)
-;; (setq pixel-scroll-precision-use-momentum nil)
-;; (pixel-scroll-precision-mode)
+(when (display-graphic-p)
+  (setq mouse-wheel-tilt-scroll t)
+  (setq scroll-conservatively 101)
+  (setq pixel-scroll-precision-use-momentum nil)
+  (pixel-scroll-precision-mode))
 
 (use-package fast-scroll
   :ensure t)
