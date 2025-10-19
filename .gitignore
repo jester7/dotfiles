@@ -23,3 +23,6 @@ tramp
 
 # elpa packages
 /elpa/
+
+# ignore EDN configuration files for Babashka (Clojure) scripts
+*.edn

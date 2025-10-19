@@ -1,0 +1,96 @@
+#!/usr/bin/env bb
+(ns pg-query
+  (:require [babashka.pods :as pods]
+            [babashka.fs :as fs]
+            [clojure.edn :as edn]
+            [clojure.string :as str]
+            [clojure.data.csv :as csv]
+            [cheshire.core :as json]
+            [clojure.java.io :as io]))
+
+;;; This script is mainly meant for use by LLMs as a tool call
+
+;; --- Load PostgreSQL pod ---
+(pods/load-pod 'org.babashka/postgresql "0.1.0")
+(require '[pod.babashka.postgresql :as pg])
+
+;; --- Load config ---
+(def config-file (fs/path (fs/parent (fs/path *file*)) "pg-query.edn"))
+(when-not (fs/exists? config-file)
+  (binding [*out* *err*]
+    (println "Error: config file pg-query.edn not found next to script.")
+    (System/exit 1)))
+
+(def db-config (edn/read-string (slurp (str config-file))))
+
+;; --- Safe query: auto LIMIT 100 if missing ---
+(defn safe-query [q]
+  (let [lower (str/lower-case q)]
+    (if (and (re-find #"(?m)^\s*select" lower)
+             (not (re-find #"(?i)\blimit\b" lower)))
+      (str q " LIMIT 100")
+      q)))
+
+;; --- Output CSV ---
+(defn output-csv
+  "Writes rows to CSV.
+   fully-qualified? true -> preserve table prefixes
+   no-header? true -> suppress header row"
+  [rows fully-qualified? no-header?]
+  (when-not (empty? rows)
+    (let [headers (if fully-qualified?
+                    (map #(name %) (keys (first rows)))
+                    (map #(last (str/split (name %) #"/")) (keys (first rows))))
+          all-rows (map #(map % (keys (first rows))) rows)]
+      (if no-header?
+        (csv/write-csv *out* all-rows)
+        (csv/write-csv *out* (cons headers all-rows))))))
+
+;; --- Run query ---
+(defn run-query [q {:keys [json? fully-qualified? no-header?]}]
+  (try
+    (let [query (safe-query q)
+          result (pg/execute! db-config [query])]
+      (if (empty? result)
+        (println "No results.")
+        (if json?
+          (println (json/generate-string result {:pretty true}))
+          (output-csv result fully-qualified? no-header?))))
+    (catch Exception e
+      (binding [*out* *err*]
+        (println "Error executing query:" (.getMessage e)))
+      (System/exit 2))))
+
+;; --- Parse args ---
+(defn parse-args [args]
+  {:json? (some #{"--json"} args)
+   :fully-qualified? (some #{"--fully-qualified"} args)
+   :no-header? (some #{"--no-header"} args)
+   :query (str/join " " (remove #{"--json" "--fully-qualified" "--no-header"} args))})
+
+;; --- Main ---
+(defn -main [& args]
+  (let [{:keys [json? fully-qualified? no-header? query]} (parse-args args)]
+    (if (str/blank? query)
+      (do
+        (println "Usage: pg-query [OPTIONS] \"SQL QUERY\"\n")
+        (println "Options:")
+        (println "  --json            Output results in JSON format (pretty)")
+        (println "  --fully-qualified Use fully-qualified column names in CSV output")
+        (println "  --no-header       Do not include CSV header row\n")
+        (println "Example configuration file pg-query.edn (place in the same directory):\n")
+        (println "{:dbtype \"postgresql\"")
+        (println " :dbname \"db_name\"")
+        (println " :host \"localhost\"")
+        (println " :user \"postgres\"")
+        (println " :password \"\" ")
+        (println " :port 5432 }\n")
+        (println "Examples:")
+        (println "  ./pg-query \"SELECT * FROM table_name\"")
+        (println "  ./pg-query --json \"SELECT * FROM table_name\"")
+        (println "  ./pg-query --fully-qualified \"SELECT u.id, o.id FROM users u JOIN orders o ON u.id=o.user_id\"")
+        (println "  ./pg-query --no-header \"SELECT * FROM huge_table\"")
+        (System/exit 0))
+      (run-query query {:json? json? :fully-qualified? fully-qualified? :no-header? no-header?}))))
+
+(apply -main *command-line-args*)
