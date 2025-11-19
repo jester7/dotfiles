@@ -37,6 +37,7 @@
 				 :key (my-get-api-key "gemini")
 				 :stream t
 				 :models '("gemini-2.5-pro"
+					   "gemini-3-pro-preview"
 					   "gemini-flash-latest"
 					   "gemini-flash-lite-latest"
 					   "gemini-2.0-flash-lite")))
