@@ -513,6 +513,8 @@ If the new path's directories does not exist, create them."
   :init
   (doom-modeline-mode t)
   :custom
+  (doom-modeline-height 28)
+    (doom-modeline-right-padding 8)
   (doom-modeline-time-icon nil)
   ;; (doom-modeline-time-clock-size 0.9)
   (doom-modeline-time-live-icon nil)
