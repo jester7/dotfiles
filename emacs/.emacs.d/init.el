@@ -9,6 +9,58 @@
       (load-theme 'ef-dark t)
     (load-theme 'ef-elea-dark t)))
 
+(use-package org
+  :ensure t
+  :demand t
+  :hook
+  (org-mode . visual-line-mode)
+  :config
+  (require 'org-tempo)
+  (setq org-support-shift-select t)
+
+  (setq org-priority-highest 1)
+  (setq org-priority-lowest 5)
+  (setq org-priority-default 3)
+  ;; use S-A-B-C-D in display
+  (setq org-priority-faces
+        '((1 . (:foreground "#FFD700" :weight bold :box (:line-width 2 :color "#FFD700"))) ; S
+          (2 . (:foreground "#FF5555" :weight bold :box (:line-width 2 :color "#FF5555"))) ; A
+          (3 . (:foreground "#50FA7B" :weight bold :box (:line-width 2 :color "#50FA7B"))) ; B
+          (4 . (:foreground "#8BE9FD" :weight bold :box (:line-width 2 :color "#8BE9FD"))) ; C
+          (5 . (:foreground "#6272A4" :weight bold :box (:line-width 2 :color "#6272A4"))))) ; D
+
+  (defun my/org-priority-setup-font-lock ()
+    (font-lock-add-keywords
+     nil
+     '(("\\[#\\(1\\)\\]" 0 `(face nil display ,(propertize " S " 'face (cdr (assoc 1 org-priority-faces)))))
+       ("\\[#\\(2\\)\\]" 0 `(face nil display ,(propertize " A " 'face (cdr (assoc 2 org-priority-faces)))))
+       ("\\[#\\(3\\)\\]" 0 `(face nil display ,(propertize " B " 'face (cdr (assoc 3 org-priority-faces)))))
+       ("\\[#\\(4\\)\\]" 0 `(face nil display ,(propertize " C " 'face (cdr (assoc 4 org-priority-faces)))))
+       ("\\[#\\(5\\)\\]" 0 `(face nil display ,(propertize " D " 'face (cdr (assoc 5 org-priority-faces))))))))
+
+  (add-hook 'org-mode-hook #'my/org-priority-setup-font-lock)
+  (add-hook 'org-agenda-mode-hook #'my/org-priority-setup-font-lock))
+
+(use-package org-modern
+  :ensure t
+  :after org
+  :hook (org-mode . org-modern-mode)
+  :custom
+  (org-modern-checkbox
+   '((?X . "⦿")
+     (?- . "-")
+     (?\s . "⦾")))
+  (org-modern-fold-stars
+   '(("▶" . "▼") ("▷" . "▽") ("▶" . "▼") ("▹" . "▿") ("▸" . "▾")))
+  
+  ;; keep disabled so custom overlay handles the tiers
+  (org-modern-priority nil)
+  
+  :config
+  (setq org-modern-todo-faces
+        '(("TODO" :inherit (org-todo) :family "Ingra")
+          ("DONE" :inherit (org-done) :family "Ingra"))))
+
 (setq custom-file "~/.emacs.d/custom-file.el")
 (load-file custom-file)
 
@@ -42,15 +94,6 @@
   :custom
   (display-line-numbers-grow-only t)
   (display-line-numbers-width-start 99))
-
-(use-package org
-  :ensure t
-  :defer t
-  :config
-  (require 'org-tempo)
-  (setq org-support-shift-select t)
-  :hook
-  (org-mode . visual-line-mode))
 
 (use-package emacs
   :custom
@@ -1047,27 +1090,6 @@ If displacement is not provided, defaults to 10 pixels."
 (set-input-method "spanish-prefix")
 (toggle-input-method)
 
-(use-package org-modern
-  :ensure t
-  :after org
-  :defer t
-  :hook
-  (org-mode . org-modern-mode)
-  :custom
-  (org-modern-checkbox
-   '((?X . "⦿")    ;; checked
-     (?- . "-")   ;; partial
-     (?\s . "⦾"))) ;; empty
-  (org-modern-fold-stars
-   '(("▶" . "▼") ("▷" . "▽") ("▶" . "▼") ("▹" . "▿") ("▸" . "▾")))
-  :config
-  (setq org-modern-todo-faces
-   '(("TODO" :inherit (org-todo) :family "Ingra")
-     ("DONE" :inherit (org-done) :family "Ingra")))
-  (setq org-modern-priority-faces
-   '((?A :inherit (org-priority) :family "Ingra")
-     (?B :inherit (org-priority) :family "Ingra")
-     (?C :inherit (org-priority) :family "Ingra"))))
 
 (use-package embark
   :ensure t
