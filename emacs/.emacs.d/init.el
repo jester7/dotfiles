@@ -529,34 +529,33 @@ If the new path's directories does not exist, create them."
   (doom-modeline-vcs-max-length 40)
   (doom-modeline-minor-modes t))
 
+;; (set-face-attribute 'header-line nil
+;; 		    :family "Ingra"
+;; 		    :weight 'medium
+;; 		    :background "#0a070e"
+;; 		    ;; :foreground "white"
+;; 		    :box '(:line-width (1 . 4) :color "#0a070e")
+;; 		    :overline nil
+;; 		    :underline nil)
 
-(set-face-attribute 'header-line nil
-		    :family "Ingra"
-		    :weight 'medium
-		    :background "#0a070e"
-		    ;; :foreground "white"
-		    :box '(:line-width (1 . 4) :color "#0a070e")
-		    :overline nil
-		    :underline nil)
+;; (set-face-attribute 'mode-line nil
+;; 		    :family "Ingra"
+;; 		    :weight 'medium
+;;                     :background "#252567"
+;;                     :box '(:line-width 3 :color "#252567")
+;;                     :overline nil
+;;                     :underline nil)
 
-(set-face-attribute 'mode-line nil
-		    :family "Ingra"
-		    :weight 'medium
-                    :background "#252567"
-                    :box '(:line-width 3 :color "#252567")
-                    :overline nil
-                    :underline nil)
-
-(set-face-attribute 'mode-line-inactive nil
-		    :family "Ingra"
-		    :weight 'regular
-                    :background "#393965"
-                    :box '(:line-width 3 :color "#393965")
-                    :overline nil
-                    :underline nil)
+;; (set-face-attribute 'mode-line-inactive nil
+;; 		    :family "Ingra"
+;; 		    :weight 'regular
+;;                     :background "#393965"
+;;                     :box '(:line-width 3 :color "#393965")
+;;                     :overline nil
+;;                     :underline nil)
 
 (set-face-foreground 'line-number "#373041")
-(set-face-attribute 'line-number nil :height 0.9)
+;; (set-face-attribute 'line-number nil :height 0.9)
 ;;(set-face-attribute 'line-number-current-line nil :height 0.9)
 (set-face-foreground 'line-number-current-line "#888888")
 (set-face-background 'line-number-current-line nil)
