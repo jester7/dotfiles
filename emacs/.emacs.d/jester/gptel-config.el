@@ -12,16 +12,12 @@
     (setq gptel-backend-xai (gptel-make-xai "xAI"
 			      :key (my-get-api-key "xai")
 			      :stream t
-			      :models '("grok-4-fast-reasoning"
-					"grok-4-fast-non-reasoning"
-					"grok-code-fast-1"
-					"grok-4"
-					"grok-3-mini")))
+			      ))
     (setq gptel-backend-openai (gptel-make-openai "OpenAI"
                                  :host "api.openai.com"
                                  :key (my-get-api-key "openai")
                                  :stream t
-                                 :models '("gpt-5"
+                                 :models '("gpt-5.1"
 					   "gpt-5-mini"
 					   "gpt-5-nano"
 					   "gpt-4.1")))
@@ -29,18 +25,12 @@
     (setq gptel-backend-claude (gptel-make-anthropic "Claude"
                                  :key (my-get-api-key "claude")
                                  :stream t
-                                 :models '("claude-sonnet-4-5-20250929"
-					   "claude-haiku-4-5-20251001"
-					   "claude-opus-4-1-20250805")))
+                                 ))
     
     (setq gptel-backend-gemini (gptel-make-gemini "Gemini"
 				 :key (my-get-api-key "gemini")
 				 :stream t
-				 :models '("gemini-2.5-pro"
-					   "gemini-3-pro-preview"
-					   "gemini-flash-latest"
-					   "gemini-flash-lite-latest"
-					   "gemini-2.0-flash-lite")))
+				 ))
     
     (setq gptel-backend-deepinfra (gptel-make-openai "deepinfra"
 				    :host "api.deepinfra.com"
