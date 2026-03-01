@@ -79,7 +79,7 @@ First tries to load from private config, falls back to public if not found."
 
 (defun get-latest-node-path ()
   "Get path to latest node version."
-  (let* ((node-versions-dir "/Users/jester/.nvm/versions/node")
+  (let* ((node-versions-dir (expand-file-name "~/.nvm/versions/node"))
          (latest-version (get-latest-version-in-dir node-versions-dir)))
     (when latest-version
       (concat node-versions-dir "/" latest-version "/bin"))))
@@ -93,25 +93,32 @@ First tries to load from private config, falls back to public if not found."
     (when (and latest-version latest-sdk)
       (concat sdk-dir "/" latest-sdk "/Sdks"))))
 
-(let ((new-paths (delq nil
-                       (list
-			(get-latest-node-path)
-			"/Users/jester/bin"
-			"/usr/local/opt/openjdk/bin"
-			"/usr/local/bin"
-			"/usr/local/sbin"
-			"/System/Cryptexes/App/usr/bin"
-			"/usr/bin"
-			"/bin"
-			"/usr/sbin"
-			"/sbin"
-			"/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
-			"/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
-			"/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
-			"/usr/local/share/dotnet"
-			"/Users/jester/.cargo/bin"
-			"/Users/jester/.dotnet/tools"
-			(get-latest-dotnet-path)
-			"/opt/homebrew/bin"))))
+(let ((new-paths
+       (delq nil
+             (append
+              ;; Shared paths
+              (list
+               (get-latest-node-path)
+               (expand-file-name "~/bin")
+               (expand-file-name "~/.cargo/bin")
+               (expand-file-name "~/.local/bin")
+               "/usr/local/bin"
+               "/usr/local/sbin"
+               "/usr/bin"
+               "/bin"
+               "/usr/sbin"
+               "/sbin")
+              ;; macOS-only paths
+              (when (eq system-type 'darwin)
+                (list
+                 "/usr/local/opt/openjdk/bin"
+                 "/System/Cryptexes/App/usr/bin"
+                 "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+                 "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+                 "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+                 "/usr/local/share/dotnet"
+                 (expand-file-name "~/.dotnet/tools")
+                 (get-latest-dotnet-path)
+                 "/opt/homebrew/bin"))))))
   (setq exec-path (append new-paths exec-path))
   (setenv "PATH" (string-join exec-path ":")))

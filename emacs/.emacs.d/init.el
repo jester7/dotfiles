@@ -62,7 +62,8 @@
           ("DONE" :inherit (org-done) :family "Ingra"))))
 
 (setq custom-file "~/.emacs.d/custom-file.el")
-(load-file custom-file)
+(when (file-exists-p custom-file)
+  (load-file custom-file))
 
 ;; (require 'quelpa-use-package)
 
@@ -455,9 +456,11 @@ If the new path's directories does not exist, create them."
 
 (global-prettify-symbols-mode t)
 
-(use-package ns-auto-titlebar
-  :ensure t
-  :defer t)
+(when (eq system-type 'darwin)
+  (use-package ns-auto-titlebar
+    :ensure t
+    :config
+    (ns-auto-titlebar-mode)))
 
 (use-package all-the-icons-completion
   :ensure t
@@ -468,7 +471,6 @@ If the new path's directories does not exist, create them."
   :defer t)
 
 (all-the-icons-completion-mode)
-(when (eq system-type 'darwin) (ns-auto-titlebar-mode))
 
 (use-package dired-x
   :ensure nil
@@ -1011,66 +1013,55 @@ If displacement is not provided, defaults to 10 pixels."
 (eval-when-compile (require 'cl))
 
 
-(defun jester/current-song ()
-  "Get the current song playing in Apple Music from the file ~/.current-song.txt."
-  (interactive)
-  (lexical-let ((file-path (expand-file-name "~/.current-song.txt")))
-    ;; Start the async process
-    (let ((process (start-process "current-song-process" nil "shortcuts" "run" "current-song")))
-      ;; Define the sentinel to handle the process completion
+(when (eq system-type 'darwin)
+  (defun jester/current-song ()
+    "Get the current song playing in Apple Music from the file ~/.current-song.txt."
+    (interactive)
+    (lexical-let ((file-path (expand-file-name "~/.current-song.txt")))
+      (let ((process (start-process "current-song-process" nil "shortcuts" "run" "current-song")))
+        (set-process-sentinel process
+                              (lambda (proc event)
+                                (when (string= event "finished\n")
+                                  (if (file-exists-p file-path)
+                                      (with-temp-buffer
+                                        (insert-file-contents file-path)
+                                        (let ((song-info (buffer-substring-no-properties
+                                                          (line-beginning-position)
+                                                          (line-end-position))))
+                                          (message "Now playing: %s" song-info)))
+                                    (message "File %s does not exist." file-path))))))))
+
+  (defun jester/play-pause ()
+    "Play or pause the current song in Apple Music."
+    (interactive)
+    (let ((process (start-process "play-pause-process" nil "shortcuts" "run" "music-play-pause")))
       (set-process-sentinel process
                             (lambda (proc event)
-                              ;; Use the captured file-path
                               (when (string= event "finished\n")
-                                (if (file-exists-p file-path)
-                                    (with-temp-buffer
-                                      ;; Insert the contents of the file into the temporary buffer
-                                      (insert-file-contents file-path)
-                                      ;; Extract the first line of the buffer
-                                      (let ((song-info (buffer-substring-no-properties
-                                                        (line-beginning-position)
-                                                        (line-end-position))))
-                                        (message "Now playing: %s" song-info)))
-                                  (message "File %s does not exist." file-path))))))))
+                                (jester/current-song))))))
 
-(defun jester/play-pause ()
-  "Play or pause the current song in Apple Music."
-  (interactive)
-  (let ((process (start-process "play-pause-process" nil "shortcuts" "run" "music-play-pause")))
-    ;; Define the sentinel to run when the process finishes
-    (set-process-sentinel process
-			  (lambda (proc event)
-			    (when (string= event "finished\n")
-			      ;; Call jester/current-song to display the current song
-			      (jester/current-song))))))
+  (defun jester/next-song ()
+    "Play the next song in Apple Music and then display the current song."
+    (interactive)
+    (let ((process (start-process "next-song-process" nil "shortcuts" "run" "next-song")))
+      (set-process-sentinel process
+                            (lambda (proc event)
+                              (when (string= event "finished\n")
+                                (jester/current-song))))))
 
-(defun jester/next-song ()
-  "Play the next song in Apple Music and then display the current song."
-  (interactive)
-  (let ((process (start-process "next-song-process" nil "shortcuts" "run" "next-song")))
-    ;; Define the sentinel to run when the process finishes
-    (set-process-sentinel process
-                          (lambda (proc event)
-                            (when (string= event "finished\n")
-                              ;; Call jester/current-song to display the current song
-                              (jester/current-song))))))
+  (defun jester/previous-song ()
+    "Play the previous song in Apple Music and then display the current song."
+    (interactive)
+    (let ((process (start-process "previous-song-process" nil "shortcuts" "run" "previous-song")))
+      (set-process-sentinel process
+                            (lambda (proc event)
+                              (when (string= event "finished\n")
+                                (jester/current-song))))))
 
-(defun jester/previous-song ()
-  "Play the previous song in Apple Music and then display the current song."
-  (interactive)
-  (let ((process (start-process "previous-song-process" nil "shortcuts" "run" "previous-song")))
-    ;; Define the sentinel to run when the process finishes
-    (set-process-sentinel process
-                          (lambda (proc event)
-                            (when (string= event "finished\n")
-                              ;; Call jester/current-song to display the current song
-                              (jester/current-song))))))
-
-
-(global-set-key (kbd "M-s-m c") 'jester/current-song)
-(global-set-key (kbd "M-s-m m") 'jester/play-pause)
-(global-set-key (kbd "M-s-m n") 'jester/next-song)
-(global-set-key (kbd "M-s-m p") 'jester/previous-song)
+  (global-set-key (kbd "M-s-m c") 'jester/current-song)
+  (global-set-key (kbd "M-s-m m") 'jester/play-pause)
+  (global-set-key (kbd "M-s-m n") 'jester/next-song)
+  (global-set-key (kbd "M-s-m p") 'jester/previous-song))
 
 
 (setq tramp-use-ssh-controlmaster-options nil)
