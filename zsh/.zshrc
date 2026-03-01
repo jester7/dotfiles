@@ -4,15 +4,18 @@ source "$HOME/os_detect.sh"
 # Source machine-specific config if it exists
 [[ -f ~/.zshrc-$HOSTNAME ]] && source ~/.zshrc-$HOSTNAME
 
-export PATH="/usr/local/opt/openjdk/bin:$PATH"
-
-export DOTNET_ROOT="$HOMEBREW_PREFIX/opt/dotnet/libexec"
+if [[ "$IS_MACOS" == "true" ]]; then
+    export PATH="/usr/local/opt/openjdk/bin:$PATH"
+    export DOTNET_ROOT="$HOMEBREW_PREFIX/opt/dotnet/libexec"
+fi
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-alias emacs="emacsclient -c -n"
+if [[ "$IS_MACOS" == "true" ]]; then
+    alias emacs="emacsclient -c -n"
+fi
 alias ls="ls -G"
 alias lsa="ls -lah -G"
 
@@ -25,9 +28,14 @@ alias listports="lsof -i -P -n | grep LISTEN"
 killgrep() {
   pkill -9 "$1"
 }
-export PATH="$HOME/.local/bin:/usr/local/opt/curl/bin:$PATH:$HOME/bin:$HOMEBREW_PREFIX/opt/postgresql@18/bin"
+export PATH="$HOME/.local/bin:$PATH:$HOME/bin"
+if [[ "$IS_MACOS" == "true" ]]; then
+    export PATH="/usr/local/opt/curl/bin:$PATH:$HOMEBREW_PREFIX/opt/postgresql@18/bin"
+fi
 
-export SUDO_EDITOR="emacsclient -c -n"
+if [[ "$IS_MACOS" == "true" ]]; then
+    export SUDO_EDITOR="emacsclient -c -n"
+fi
 
 if [[ -o interactive ]]; then
     show_cloud_banner
