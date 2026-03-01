@@ -55,18 +55,18 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-alias -g emacs="emacsclient -c -n"
-alias -g ls="ls -G"
-alias -g lsa="ls -lah -G"
+alias emacs="emacsclient -c -n"
+alias ls="ls -G"
+alias lsa="ls -lah -G"
 
-alias -g lsagrep="ls -lah -G | grep"
-alias -g psgrep="ps aux | grep"
-alias -g listports="lsof -i -P -n | grep LISTEN"
+alias lsagrep="ls -lah -G | grep"
+alias psgrep="ps aux | grep"
+alias listports="lsof -i -P -n | grep LISTEN"
 
 
 # killgrep: kill a process by name
 killgrep() {
-  ps aux | grep $1 | awk '{print $2}' | xargs kill -9
+  pkill -9 "$1"
 }
 export PATH="$HOME/.local/bin:/usr/local/opt/curl/bin:$PATH:$HOME/bin:$HOMEBREW_PREFIX/opt/postgresql@18/bin"
 
