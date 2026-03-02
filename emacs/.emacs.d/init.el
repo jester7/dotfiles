@@ -71,8 +71,7 @@
 ;; (add-to-list 'package-archives
 ;;              '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 
-(defvar my-package-archive '("melpa-stable" . "https://stable.melpa.org/packages/"))
-;; (defvar my-package-archive '("melpa" . "https://melpa.org/packages/"))
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 
 (defun my-add-and-refresh ()
   "Add melpa stable to package-archives and refresh contents."
@@ -396,10 +395,13 @@ If the new path's directories does not exist, create them."
 
 (defun jester/random-background-image ()
   "Select a random background image from ~/Documents/emacs-backgrounds/"
-  (let* ((image-dir "~/Documents/emacs-backgrounds")
-         (images (directory-files (expand-file-name image-dir) t "\\.\\(png\\|jpg\\|gif\\|jpeg\\)$"))
-         (chosen (when images (nth (random (length images)) images))))
-    (or chosen "~/Documents/black-clover-emacs-banner-2.png"))) ; fallback image if directory is empty
+  (let ((image-dir (expand-file-name "~/Documents/emacs-backgrounds"))
+        (text-banner (expand-file-name "~/.emacs.d/banner-text1.txt")))
+    (if (file-directory-p image-dir)
+        (let* ((images (directory-files image-dir t "\\.\\(png\\|jpg\\|gif\\|jpeg\\)$"))
+               (chosen (when images (nth (random (length images)) images))))
+          (or chosen text-banner))
+      text-banner)))
 
 
 (use-package dashboard
