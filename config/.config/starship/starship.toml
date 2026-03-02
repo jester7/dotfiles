@@ -81,7 +81,7 @@ symbol = ' '
 command = '''
 if [[ -f /sys/class/dmi/id/sys_vendor ]]; then
   case "$(cat /sys/class/dmi/id/sys_vendor)" in
-    *Amazon*) echo "󰸏";;
+    *Amazon*) echo "";;
     *Google*) echo "󱇶";;
     *Microsoft*) echo "";;
   esac
