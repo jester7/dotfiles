@@ -436,7 +436,9 @@ If the new path's directories does not exist, create them."
   (dashboard-items '((agenda . 12)
 		     (recents . 6)
 		     (projects . 6)
-		     (bookmarks . 6))))
+		     (bookmarks . 6)))
+  :init
+  (setq initial-buffer-choice (lambda () (get-buffer-create dashboard-buffer-name)))
 
 ;; (defvar fetch-weather-timeout-seconds 2
 ;;   "Number of seconds before the weather fetch times out.")
