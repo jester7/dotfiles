@@ -6,7 +6,7 @@ $fill\
 $python\
 $lua\
 $java\
-$custom.clojure\
+$custom\
 $nodejs\
 $golang\
 $haskell\
@@ -19,7 +19,7 @@ $jobs\
 $cmd_duration\
 $line_break\
 $jobs\
-$custom.cloud\
+$env_var.CLOUD_ICON\
 $time\
 $character"""
 
@@ -47,7 +47,7 @@ format = "took [$duration]($style) "
 
 [git_branch]
 style = 'fg:green'
-symbol = ' '
+symbol = ' '
 format = '[on](white) [$symbol$branch ]($style)'
 
 [git_status]
@@ -56,7 +56,7 @@ format = '([$all_status$ahead_behind]($style) )'
 
 
 [aws]
-symbol = ' '
+symbol = ' '
 style = 'yellow'
 format = '[$symbol($profile )(\[$duration\] )]($style)'
 
@@ -68,33 +68,23 @@ format = 'on [$symbol$account(@$domain)(\($region\))]($style) '
 # Programming languages
 [nodejs]
 format = "[$symbol($version )]($style)"
-symbol = ' '
+symbol = ' '
 
 [python]
 python_binary = ['python3', 'python']
 pyenv_version_name = false
 style = 'teal'
-symbol = ' '
+symbol = ' '
 
-
-[custom.cloud]
-command = '''
-if [[ -f /sys/class/dmi/id/sys_vendor ]]; then
-  case "$(cat /sys/class/dmi/id/sys_vendor)" in
-    *Amazon*) echo "";;
-    *Google*) echo "󱇶";;
-    *Microsoft*) echo "";;
-  esac
-fi
-'''
-when = 'test -f /sys/class/dmi/id/sys_vendor'
-format = '[$output]($style) '
+[env_var.CLOUD_ICON]
+variable = 'CLOUD_ICON'
+format = '[$env_value]($style) '
 style = 'yellow'
 
 [custom.clojure]
 command = 'clojure-version-check.bb'
 detect_files = ['deps.edn']
-symbol = ' '
+symbol = ' '
 format = 'and [$symbol($output)]($style) '
 style = 'blue'
 

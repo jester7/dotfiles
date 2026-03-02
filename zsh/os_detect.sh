@@ -28,6 +28,15 @@ elif [[ "$OS" == "Linux" ]]; then
   fi
 fi
 
+# Cloud provider detection for starship prompt
+if [[ -f /sys/class/dmi/id/sys_vendor ]]; then
+  case "$(cat /sys/class/dmi/id/sys_vendor)" in
+    *Amazon*)    export CLOUD_ICON="";;
+    *Google*)    export CLOUD_ICON="󱇶";;
+    *Microsoft*) export CLOUD_ICON="";;
+  esac
+fi
+
 # cloud detection and banner function
 show_cloud_banner() {
     TERM_WIDTH=$(tput cols)
@@ -35,7 +44,7 @@ show_cloud_banner() {
     if [[ "$OSTYPE" == "darwin"* ]]; then
         BG="\e[48;5;240m"        # Gray
         CLOUD="macOS"
-        ICON=" " # Apple Logo
+        ICON="" # Apple Logo
     else
         local dmi_info=""
         [[ -f /sys/class/dmi/id/product_name ]] && dmi_info=$(cat /sys/class/dmi/id/product_name)
@@ -45,22 +54,22 @@ show_cloud_banner() {
             *"Google"*)
                 BG="\e[48;2;66;133;244m" # Google Blue
                 CLOUD="Google Cloud"
-                ICON="󱇶 " # GCP Logo
+                ICON="󱇶" # GCP Logo
                 ;;
             *"Amazon"*)
                 BG="\e[48;2;255;153;0m"  # AWS Orange
                 CLOUD="AWS"
-                ICON=" " # AWS Logo
+                ICON="" # AWS Logo
                 ;;
             *"Microsoft"*)
                 BG="\e[48;2;0;120;212m"  # Azure Blue
                 CLOUD="Azure"
-                ICON=" " # Azure Logo
+                ICON="" # Azure Logo
                 ;;
             *)
                 BG="\e[48;5;240m"        # Generic Gray
                 CLOUD="Linux"
-                ICON=" " # Generic Cloud
+                ICON="󰅟" # Generic Cloud
                 ;;
         esac
     fi
