@@ -383,15 +383,16 @@ If the new path's directories does not exist, create them."
   (setq mouse-wheel-tilt-scroll t)
   (setq scroll-conservatively 101)
   (setq pixel-scroll-precision-use-momentum nil)
-  (pixel-scroll-precision-mode))
+  (pixel-scroll-precision-mode)
+  (use-package fast-scroll
+    :ensure t)
 
-(use-package fast-scroll
-  :ensure t)
+  (add-hook 'fast-scroll-start-hook (lambda () (flycheck-mode -1)))
+  (add-hook 'fast-scroll-end-hook (lambda () (flycheck-mode 1)))
+  (fast-scroll-config)
+  (fast-scroll-mode 1))
 
-(add-hook 'fast-scroll-start-hook (lambda () (flycheck-mode -1)))
-(add-hook 'fast-scroll-end-hook (lambda () (flycheck-mode 1)))
-(fast-scroll-config)
-(fast-scroll-mode 1)
+
 
 (defun jester/random-background-image ()
   "Select a random background image from ~/Documents/emacs-backgrounds/"
