@@ -8,6 +8,13 @@ if [[ $- == *i* ]]; then
 
     show_cloud_banner
 
+    if [[ "$IS_LINUX" == "true" ]]; then
+        # Run system status check for linux servers
+        if [[ -x "$HOME/bin/system-status.sh" ]]; then
+            "$HOME/bin/system-status.sh" -m -s
+        fi
+    fi
+
     # Starship config
     export STARSHIP_CONFIG="$HOME/.config/starship/starship.toml"
     eval "$(starship init bash)"
