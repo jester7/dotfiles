@@ -254,40 +254,40 @@
   :custom
   (cider-font-lock-dynamically '(macro core function var)))
 
-(use-package treesit-auto
-  :ensure t
-  :custom
-  (treesit-auto-install 'prompt)
-  :config
-  (treesit-auto-add-to-auto-mode-alist '(csharp python javascript cpp c)))
+(when (eq system-type 'darwin)
+  (use-package treesit-auto
+    :ensure t
+    :custom
+    (treesit-auto-install 'prompt)
+    :config
+    (treesit-auto-add-to-auto-mode-alist '(csharp python javascript cpp c)))
 
+  ;; this fixes a problem where v0.20.4 of this grammar blows up with emacs
+  (defvar genehack/tsx-treesit-auto-recipe
+    (make-treesit-auto-recipe
+     :lang 'tsx
+     :ts-mode 'tsx-ts-mode
+     :remap '(typescript-tsx-mode)
+     :requires 'typescript
+     :url "https://github.com/tree-sitter/tree-sitter-typescriptx"
+     :revision "v0.20.3"
+     :source-dir "tsx/src"
+     :ext "\\.tsx\\'")
+    "Recipe for libtree-sitter-tsx.dylib")
+  (add-to-list 'treesit-auto-recipe-list genehack/tsx-treesit-auto-recipe)
 
-;; this fixes a problem where v0.20.4 of this grammar blows up with emacs
-(defvar genehack/tsx-treesit-auto-recipe
-  (make-treesit-auto-recipe
-   :lang 'tsx
-   :ts-mode 'tsx-ts-mode
-   :remap '(typescript-tsx-mode)
-   :requires 'typescript
-   :url "https://github.com/tree-sitter/tree-sitter-typescriptx"
-   :revision "v0.20.3"
-   :source-dir "tsx/src"
-   :ext "\\.tsx\\'")
-  "Recipe for libtree-sitter-tsx.dylib")
-(add-to-list 'treesit-auto-recipe-list genehack/tsx-treesit-auto-recipe)
-
-(defvar genehack/typescript-treesit-auto-recipe
-  (make-treesit-auto-recipe
-   :lang 'typescript
-   :ts-mode 'typescript-ts-mode
-   :remap 'typescript-mode
-   :requires 'tsx
-   :url "https://github.com/tree-sitter/tree-sitter-typescript"
-   :revision "v0.20.3"
-   :source-dir "typescript/src"
-   :ext "\\.ts\\'")
-  "Recipe for libtree-sitter-typescript.dylib")
-(add-to-list 'treesit-auto-recipe-list genehack/typescript-treesit-auto-recipe)
+  (defvar genehack/typescript-treesit-auto-recipe
+    (make-treesit-auto-recipe
+     :lang 'typescript
+     :ts-mode 'typescript-ts-mode
+     :remap 'typescript-mode
+     :requires 'tsx
+     :url "https://github.com/tree-sitter/tree-sitter-typescript"
+     :revision "v0.20.3"
+     :source-dir "typescript/src"
+     :ext "\\.ts\\'")
+    "Recipe for libtree-sitter-typescript.dylib")
+  (add-to-list 'treesit-auto-recipe-list genehack/typescript-treesit-auto-recipe))
 
 
 (setq tab-always-indent 'complete)
