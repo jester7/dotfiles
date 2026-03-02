@@ -1,5 +1,7 @@
 #!/bin/bash
 
+command -v stow >/dev/null || { echo "Error: stow is not installed. Run: sudo apt install stow"; exit 1; }
+
 DOTFILES="$HOME/dotfiles"
 cd "$DOTFILES" || exit 1
 
