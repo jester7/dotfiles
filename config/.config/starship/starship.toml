@@ -21,6 +21,8 @@ $line_break\
 $jobs\
 $env_var\
 $time\
+$username\
+$hostname\
 $character"""
 
 add_newline = true
@@ -66,27 +68,39 @@ style = 'red'
 format = 'on [$symbol$account(@$domain)(\($region\))]($style) '
 
 # Programming languages
+[java]
+symbol = '☕ '
+
 [nodejs]
-format = "[$symbol($version )]($style)"
-symbol = ' '
+symbol = ' '
 
 [python]
 python_binary = ['python3', 'python']
 pyenv_version_name = false
 style = 'teal'
-symbol = ' '
+symbol = ' '
 
 [env_var]
 variable = 'CLOUD_ICON'
 format = '[$env_value]($style) '
-style = 'yellow'
+style = 'white'
 
 [custom.clojure]
 command = 'clojure-version-check.bb'
 detect_files = ['deps.edn']
-symbol = ' '
+symbol = ' '
 format = 'and [$symbol($output)]($style) '
 style = 'blue'
+
+[username]
+show_always = true
+style_user = "bold cyan"
+format = "[$user]($style)"
+
+[hostname]
+ssh_only = false
+style = "bold purple"
+format = "[@$hostname]($style) "
 
 
 [package]

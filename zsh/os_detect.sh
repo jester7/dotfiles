@@ -28,57 +28,49 @@ elif [[ "$OS" == "Linux" ]]; then
   fi
 fi
 
-# Cloud provider detection for starship prompt
-if [[ -f /sys/class/dmi/id/sys_vendor ]]; then
-  case "$(cat /sys/class/dmi/id/sys_vendor)" in
-    *Amazon*)    export CLOUD_ICON="";;
-    *Google*)    export CLOUD_ICON="󱇶";;
-    *Microsoft*) export CLOUD_ICON="";;
-  esac
+# Cloud provider detection for starship prompt and banner
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    export CLOUD_BG="\e[48;5;240m"        # Gray
+    export CLOUD_NAME="macOS"
+    export CLOUD_ICON="" # Apple Logo
+else
+    local dmi_info=""
+    [[ -f /sys/class/dmi/id/product_name ]] && dmi_info=$(cat /sys/class/dmi/id/product_name)
+    [[ -f /sys/class/dmi/id/sys_vendor ]] && dmi_info="$dmi_info $(cat /sys/class/dmi/id/sys_vendor)"
+
+    case "$dmi_info" in
+        *"Google"*)
+            export CLOUD_BG="\e[48;2;66;133;244m" # Google Blue
+            export CLOUD_NAME="Google Cloud"
+            export CLOUD_ICON="󱇶" # GCP Logo
+            ;;
+        *"Amazon"*)
+            export CLOUD_BG="\e[48;2;255;153;0m"  # AWS Orange
+            export CLOUD_NAME="AWS"
+            export CLOUD_ICON="" # AWS Logo
+            ;;
+        *"Microsoft"*)
+            export CLOUD_BG="\e[48;2;0;120;212m"  # Azure Blue
+            export CLOUD_NAME="Azure"
+            export CLOUD_ICON="" # Azure Logo
+            ;;
+        *)
+            export CLOUD_BG="\e[48;5;240m"        # Generic Gray
+            export CLOUD_NAME="Linux"
+            export CLOUD_ICON="󰅟" # Generic Cloud
+            ;;
+    esac
 fi
 
 # cloud detection and banner function
 show_cloud_banner() {
     TERM_WIDTH=$(tput cols)
 
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-        BG="\e[48;5;240m"        # Gray
-        CLOUD="macOS"
-        ICON="" # Apple Logo
-    else
-        local dmi_info=""
-        [[ -f /sys/class/dmi/id/product_name ]] && dmi_info=$(cat /sys/class/dmi/id/product_name)
-        [[ -f /sys/class/dmi/id/sys_vendor ]] && dmi_info="$dmi_info $(cat /sys/class/dmi/id/sys_vendor)"
-
-        case "$dmi_info" in
-            *"Google"*)
-                BG="\e[48;2;66;133;244m" # Google Blue
-                CLOUD="Google Cloud"
-                ICON="󱇶" # GCP Logo
-                ;;
-            *"Amazon"*)
-                BG="\e[48;2;255;153;0m"  # AWS Orange
-                CLOUD="AWS"
-                ICON="" # AWS Logo
-                ;;
-            *"Microsoft"*)
-                BG="\e[48;2;0;120;212m"  # Azure Blue
-                CLOUD="Azure"
-                ICON="" # Azure Logo
-                ;;
-            *)
-                BG="\e[48;5;240m"        # Generic Gray
-                CLOUD="Linux"
-                ICON="󰅟" # Generic Cloud
-                ;;
-        esac
-    fi
-
     local hostname_str="${HOST:-$(hostname)}"
-    local text="$ICON $CLOUD - $hostname_str"
+    local text="$CLOUD_ICON $CLOUD_NAME - $hostname_str"
     local padding=$(( (TERM_WIDTH - ${#text}) / 2 ))
 
     echo ""
-    printf "${BG}%*s%s%*s\e[0m\n" "$padding" "" "$text" "$padding" ""
+    printf "${CLOUD_BG}%*s%s%*s\e[0m\n" "$padding" "" "$text" "$padding" ""
     echo ""
 }
