@@ -19,7 +19,7 @@ if [[ $- == *i* ]]; then
     if [[ "$IS_LINUX" == "true" ]]; then
         # Run system status check for linux servers
         if [[ -x "$HOME/bin/system-status.sh" ]]; then
-            "$HOME/bin/system-status.sh" -p -s -m -d
+            "$HOME/bin/system-status.sh" -p -s -m
         fi
     fi
 fi
