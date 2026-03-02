@@ -6,7 +6,7 @@ $fill\
 $python\
 $lua\
 $java\
-$custom\
+$custom.clojure\
 $nodejs\
 $golang\
 $haskell\
@@ -19,6 +19,7 @@ $jobs\
 $cmd_duration\
 $line_break\
 $jobs\
+$custom.cloud\
 $time\
 $character"""
 
@@ -80,9 +81,9 @@ symbol = ' '
 command = '''
 if [[ -f /sys/class/dmi/id/sys_vendor ]]; then
   case "$(cat /sys/class/dmi/id/sys_vendor)" in
-    *Amazon*) echo " AWS";;
-    *Google*) echo "󱇶 GCP";;
-    *Microsoft*) echo " Azure";;
+    *Amazon*) echo "󰸏";;
+    *Google*) echo "󱇶";;
+    *Microsoft*) echo "";;
   esac
 fi
 '''
