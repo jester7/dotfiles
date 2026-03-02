@@ -76,6 +76,20 @@ style = 'teal'
 symbol = ' '
 
 
+[custom.cloud]
+command = '''
+if [[ -f /sys/class/dmi/id/sys_vendor ]]; then
+  case "$(cat /sys/class/dmi/id/sys_vendor)" in
+    *Amazon*) echo " AWS";;
+    *Google*) echo "󱇶 GCP";;
+    *Microsoft*) echo " Azure";;
+  esac
+fi
+'''
+when = 'test -f /sys/class/dmi/id/sys_vendor'
+format = '[$output]($style) '
+style = 'yellow'
+
 [custom.clojure]
 command = 'clojure-version-check.bb'
 detect_files = ['deps.edn']
