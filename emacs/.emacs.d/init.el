@@ -844,9 +844,10 @@ If the new path's directories does not exist, create them."
       (insert-file-contents-literally key-file)
       (string-trim (buffer-substring-no-properties (point-min) (point-max))))))
 
-(load-file "~/.emacs.d/jester/gptel-config.el")
-;; (load-file "~/.emacs.d/jester/gptel-copilot.el")
-(load-file "~/.emacs.d/jester/llm-chat-search.el")
+(when (eq system-type 'darwin)
+  (load-file "~/.emacs.d/jester/gptel-config.el")
+  ;; (load-file "~/.emacs.d/jester/gptel-copilot.el")
+  (load-file "~/.emacs.d/jester/llm-chat-search.el"))
 
 (use-package markdown-mode
   :ensure t
