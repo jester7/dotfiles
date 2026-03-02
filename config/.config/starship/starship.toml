@@ -19,7 +19,7 @@ $jobs\
 $cmd_duration\
 $line_break\
 $jobs\
-$env_var.CLOUD_ICON\
+$env_var\
 $time\
 $character"""
 
@@ -76,7 +76,7 @@ pyenv_version_name = false
 style = 'teal'
 symbol = ' '
 
-[env_var.CLOUD_ICON]
+[env_var]
 variable = 'CLOUD_ICON'
 format = '[$env_value]($style) '
 style = 'yellow'
