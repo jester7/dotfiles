@@ -216,9 +216,9 @@
   :ensure t
   :defer t
   :mode ("\\.clj\\'" . clojure-mode)
-	 ("\\.cljs\\'" . clojurescript-mode)
-	 ("\\.cljc\\'" . clojurec-mode)
-	 ("\\.edn\\'" . clojure-mode)
+  ("\\.cljs\\'" . clojurescript-mode)
+  ("\\.cljc\\'" . clojurec-mode)
+  ("\\.edn\\'" . clojure-mode)
   :hook
   (clojure-mode . rainbow-delimiters-mode)
   (clojure-mode . smartscan-mode))
@@ -227,7 +227,7 @@
   (interactive)
   ;; find the frame that has the cider-repl buffer
   (let* ((cider-repl-buffer (get-buffer (matches-a-buffer-name "\*cider")))
-	(cider-repl-frame (get-buffer-window cider-repl-buffer)))
+	 (cider-repl-frame (get-buffer-window cider-repl-buffer)))
     (if cider-repl-frame
 	(delete-frame (window-frame cider-repl-frame))))
   (cider-quit))
@@ -244,13 +244,13 @@
   :ensure t
   :defer t
   :bind (:map cider-repl-mode-map
-	 ("C-c s-q" . jester/cider-quit-delete-window)
-	 ("C-c s-s" . cider-connect-sibling-cljs)
-	 ("C-c s-r" . cider-run))
+	      ("C-c s-q" . jester/cider-quit-delete-window)
+	      ("C-c s-s" . cider-connect-sibling-cljs)
+	      ("C-c s-r" . cider-run))
   :hook (cider-mode . rainbow-delimiters-mode)
-         (cider-repl-mode . rainbow-delimiters-mode)
-         (cider-mode . (lambda ()
-                         (add-hook 'after-save-hook 'cider-load-buffer nil 'make-it-local)))
+  (cider-repl-mode . rainbow-delimiters-mode)
+  (cider-mode . (lambda ()
+                  (add-hook 'after-save-hook 'cider-load-buffer nil 'make-it-local)))
   :custom
   (cider-font-lock-dynamically '(macro core function var)))
 
@@ -461,13 +461,12 @@ If the new path's directories does not exist, create them."
   (use-package ns-auto-titlebar
     :ensure t
     :config
-    (ns-auto-titlebar-mode)))
+    (ns-auto-titlebar-mode))
+  (use-package telega
+    :ensure t
+    :defer t))
 
 (use-package all-the-icons-completion
-  :ensure t
-  :defer t)
-
-(use-package telega
   :ensure t
   :defer t)
 
@@ -560,7 +559,7 @@ If the new path's directories does not exist, create them."
   (doom-modeline-mode t)
   :custom
   (doom-modeline-height 28)
-    (doom-modeline-right-padding 8)
+  (doom-modeline-right-padding 8)
   (doom-modeline-time-icon nil)
   ;; (doom-modeline-time-clock-size 0.9)
   (doom-modeline-time-live-icon nil)
@@ -640,7 +639,7 @@ If the new path's directories does not exist, create them."
   ;; (corfu-preselect 'prompt)      ;; Preselect the prompt
   ;; (corfu-on-exact-match nil)     ;; Configure handling of exact matches
   ;; (corfu-scroll-margin 5)        ;; Use scroll margin
- 
+  
   ;; Enable Corfu only for certain modes.
   ;; :hook ((prog-mode . corfu-mode)
   ;;        (shell-mode . corfu-mode)
@@ -735,8 +734,8 @@ If the new path's directories does not exist, create them."
 ;;   (treesit-auto-add-to-auto-mode-alist 'all)
 ;;   (global-treesit-auto-mode))
 
-;(setq org-roam-directory "/Volumes/Notes/org-roam")
-;(org-roam-db-autosync-mode)
+					;(setq org-roam-directory "/Volumes/Notes/org-roam")
+					;(org-roam-db-autosync-mode)
 
 (use-package typescript-mode
   :ensure t
@@ -756,8 +755,8 @@ If the new path's directories does not exist, create them."
   :hook
   (prog-mode . hs-minor-mode))
 
-;(setq 'imenu-sort-function 'imenu--sort-by-position)
-;(setq 'imenu-auto-rescan )
+					;(setq 'imenu-sort-function 'imenu--sort-by-position)
+					;(setq 'imenu-auto-rescan )
 
 (add-hook 'prog-mode-hook 'imenu-add-menubar-index)
 
@@ -942,7 +941,7 @@ If the new path's directories does not exist, create them."
 (advice-add 'wdired-finish-edit
             :after #'jester/restore-icons)
 (advice-add 'wdired-abort-changes
-             :after #'jester/restore-icons)
+            :after #'jester/restore-icons)
 
 (defun shake-frame (&optional frame duration displacement)
   "Shakes the specified FRAME or current frame slightly.
@@ -957,8 +956,8 @@ If displacement is not provided, defaults to 10 pixels."
     (catch 'exit
       (while (< (float-time (time-since start-time)) duration)
         (set-frame-position (selected-frame)
-                             (+ (car frame-pos) (random displacement))
-                             (+ (cdr frame-pos) (random displacement)))
+                            (+ (car frame-pos) (random displacement))
+                            (+ (cdr frame-pos) (random displacement)))
         (redisplay t)
         (sit-for 0.015))
       (set-frame-position (selected-frame) (car frame-pos) (cdr frame-pos)))))
