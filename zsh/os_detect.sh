@@ -36,8 +36,12 @@ show_cloud_banner() {
         BG="\e[48;5;240m"        # Gray
         CLOUD="macOS"
         ICON=" " # Apple Logo
-    elif [[ -f /sys/class/dmi/id/product_name ]]; then
-        case $(cat /sys/class/dmi/id/product_name) in
+    else
+        local dmi_info=""
+        [[ -f /sys/class/dmi/id/product_name ]] && dmi_info=$(cat /sys/class/dmi/id/product_name)
+        [[ -f /sys/class/dmi/id/sys_vendor ]] && dmi_info="$dmi_info $(cat /sys/class/dmi/id/sys_vendor)"
+
+        case "$dmi_info" in
             *"Google"*)
                 BG="\e[48;2;66;133;244m" # Google Blue
                 CLOUD="Google Cloud"
@@ -55,7 +59,7 @@ show_cloud_banner() {
                 ;;
             *)
                 BG="\e[48;5;240m"        # Generic Gray
-                CLOUD="Unknown Cloud"
+                CLOUD="Linux"
                 ICON=" " # Generic Cloud
                 ;;
         esac
