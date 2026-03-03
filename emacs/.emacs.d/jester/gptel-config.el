@@ -1,6 +1,7 @@
 (use-package gptel
   :defer nil
   :ensure t
+  :vc (:url "https://github.com/karthink/gptel" :branch "master")
   :custom
   ;; use whole doc by default
   (gptel-org-branching-context nil)
