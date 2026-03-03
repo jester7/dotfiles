@@ -82,7 +82,7 @@ symbol = ' '
 
 [env_var]
 variable = 'CLOUD_ICON'
-format = '[$env_value]($style) '
+format = '[$env_value]($style)'
 style = 'white'
 
 [custom.clojure]
