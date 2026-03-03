@@ -603,11 +603,10 @@ If the new path's directories does not exist, create them."
 ;;                     :overline nil
 ;;                     :underline nil)
 
-(set-face-foreground 'line-number "#373041")
-;; (set-face-attribute 'line-number nil :height 0.9)
-;;(set-face-attribute 'line-number-current-line nil :height 0.9)
-(set-face-foreground 'line-number-current-line "#888888")
-(set-face-background 'line-number-current-line nil)
+(when (display-graphic-p)
+  (set-face-foreground 'line-number "#373041")
+  (set-face-foreground 'line-number-current-line "#888888")
+  (set-face-background 'line-number-current-line nil))
 ;; right border for current line
 
 (use-package lsp-ui
