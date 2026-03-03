@@ -65,24 +65,24 @@
 (when (file-exists-p custom-file)
   (load-file custom-file))
 
-;; (require 'quelpa-use-package)
+(add-to-list 'package-archives
+              '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 
-;; (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-;; (add-to-list 'package-archives
-;;              '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+(defvar my-melpa-archive '("melpa" . "https://melpa.org/packages/")
+  "MELPA archive entry. Added on-demand via C-c r.")
 
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-
-(defun my-add-and-refresh ()
-  "Add melpa stable to package-archives and refresh contents."
+(defun my-toggle-melpa-and-refresh ()
+  "Toggle MELPA in package-archives and refresh."
   (interactive)
-  ;; if not already added, add
-  (unless (assoc (car my-package-archive) package-archives)
-    (add-to-list 'package-archives my-package-archive t))
+  (if (assoc (car my-melpa-archive) package-archives)
+      (progn
+        (setq package-archives (assoc-delete-all (car my-melpa-archive) package-archives))
+        (message "MELPA removed"))
+    (add-to-list 'package-archives my-melpa-archive t)
+    (message "MELPA added"))
   (package-refresh-contents))
 
-;; bind to C-c u
-(global-set-key (kbd "C-c r") 'my-add-and-refresh)
+(global-set-key (kbd "C-c r") 'my-toggle-melpa-and-refresh)
 
 (blink-cursor-mode t)
 
