@@ -13,4 +13,6 @@
 
 (println (or (clj-version "./deps.edn")
              (clj-version (fs/expand-home "~/.clojure/deps.edn"))
-             (clj-version "/usr/local/lib/clojure/deps.edn")))
+             (clj-version "/opt/homebrew/lib/clojure/deps.edn")
+             (clj-version "/usr/local/lib/clojure/deps.edn")
+             (clj-version "/usr/share/clojure/deps.edn")))
