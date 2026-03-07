@@ -1,7 +1,18 @@
 ;;; diccionario RAE / DRAE / DLE
 
+(defconst dle-command "buscar-dle"
+  "External command used to query the DLE.")
+
+(defun dle--call-command-to-string (word)
+  "Return DLE output for WORD, signaling an error on failure."
+  (with-temp-buffer
+    (let ((exit-code (call-process dle-command nil t nil word)))
+      (if (and (integerp exit-code) (zerop exit-code))
+          (string-trim-right (buffer-string))
+        (error "%s" (string-trim (buffer-string)))))))
+
 (defun dle-buscar-palabra (word)
-  "Busca PALABRA en el diccionario DLE utilizando buscar-dle.sh.
+  "Busca PALABRA en el diccionario DLE utilizando buscar-dle.
 Si se invoca interactivamente sin una región activa, solicita la palabra.
 Si hay una región activa, utiliza el texto de la región como la palabra."
   (interactive
@@ -23,8 +34,8 @@ Si hay una región activa, utiliza el texto de la región como la palabra."
         (insert "\n\n------------------\n")
         ;; Insert the word that was looked up
         (insert (concat word "\n"))
-        ;; Run the shell command and insert its output
-        (call-process "buscar-dle.sh" nil t nil word)
+        ;; Run the external command and insert its output
+        (insert (dle--call-command-to-string word))
         ;; Make buffer read-only
         (special-mode)
         ;; Switch to the buffer to recenter
@@ -36,7 +47,7 @@ Si hay una región activa, utiliza el texto de la región como la palabra."
   (interactive)
   (let ((word (thing-at-point 'word)))
     (when word
-      (let ((output (shell-command-to-string (concat "buscar-dle.sh " word))))
+      (let ((output (dle--call-command-to-string word)))
         (insert "\n" output)))))
 
 (global-set-key (kbd "C-c B") 'dle-buscar-palabra)
