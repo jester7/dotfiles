@@ -26,3 +26,10 @@ tramp
 
 # ignore EDN configuration files for Babashka (Clojure) scripts
 *.edn
+
+# local tooling and agent docs
+.clj-kondo/
+.lsp/
+AGENTS.md
+CLAUDE.md
+
