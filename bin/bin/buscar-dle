@@ -1,0 +1,109 @@
+#!/usr/bin/env bb
+
+(ns buscar-dle
+  (:require [babashka.http-client :as http]
+            [clojure.string :as str])
+  (:import (java.net URLEncoder)
+           (java.nio.charset StandardCharsets)))
+
+(def user-agent
+  (str "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+       "AppleWebKit/537.36 (KHTML, like Gecko) "
+       "Chrome/122.0.0.0 Safari/537.36"))
+
+(def named-html-entities
+  {"amp" "&"
+   "lt" "<"
+   "gt" ">"
+   "quot" "\""
+   "apos" "'"
+   "nbsp" " "})
+
+(defn print-usage []
+  (println "Usage: buscar-dle <palabra o frase>")
+  (println)
+  (println "Fetches a definition from the Diccionario de la Lengua Espanola."))
+
+(defn stderr-println [& xs]
+  (binding [*out* *err*]
+    (apply println xs)))
+
+(defn url-encode-path-segment [s]
+  (-> (URLEncoder/encode s (str StandardCharsets/UTF_8))
+      (str/replace "+" "%20")))
+
+(defn fetch-entry [term]
+  (http/get (str "https://dle.rae.es/" (url-encode-path-segment term))
+            {:headers {"User-Agent" user-agent}
+             :throw false
+             :timeout 10000}))
+
+(defn decode-html-entity [entity]
+  (cond
+    (str/starts-with? entity "#x")
+    (str (char (Integer/parseInt (subs entity 2) 16)))
+
+    (str/starts-with? entity "#")
+    (str (char (Integer/parseInt (subs entity 1) 10)))
+
+    :else
+    (get named-html-entities entity (str "&" entity ";"))))
+
+(defn html-unescape [s]
+  (str/replace s #"&(#x[0-9A-Fa-f]+|#[0-9]+|[A-Za-z]+);"
+               (fn [[_ entity]]
+                 (decode-html-entity entity))))
+
+(defn normalize-whitespace [s]
+  (-> s
+      (str/replace #"\r" "")
+      (str/replace #"[ \t]+\n" "\n")
+      (str/replace #"\n{3,}" "\n\n")
+      (str/trim)))
+
+(defn extract-definition [html]
+  (when-let [[_ definition-html]
+             (re-find #"(?s)<div class=\"o-main__content\">.*?<section class=\"c-section\">(.*?)</section>.*?</div>"
+                      html)]
+    (-> definition-html
+        (str/replace #"(?s)<header class=\"c-section__title u-sr-only\">.*?</header>" "")
+        (str/replace #"(?s)(<div class=\"n2 c-text-intro\">.*?</div>)" "$1\n")
+        (str/replace #"<br/?>" "\n")
+        (str/replace #"</(section|ol|li|h3|p|div)>" "$0\n")
+        (str/replace #"<[^>]+>" "")
+        (html-unescape)
+        (normalize-whitespace))))
+
+(defn -main [& args]
+  (let [term (str/trim (str/join " " args))]
+    (cond
+      (or (empty? args) (some #{"-h" "--help"} args))
+      (do
+        (print-usage)
+        (System/exit 0))
+
+      :else
+      (try
+        (let [{:keys [status body error]} (fetch-entry term)]
+          (cond
+            error
+            (do
+              (stderr-println "Error fetching URL:" (.getMessage error))
+              (System/exit 1))
+
+            (not= 200 status)
+            (do
+              (stderr-println "Error fetching URL: HTTP" status)
+              (System/exit 1))
+
+            :else
+            (if-let [definition (extract-definition body)]
+              (println definition)
+              (do
+                (stderr-println (str "No se encontro definicion para la palabra " term))
+                (System/exit 1)))))
+        (catch Exception e
+          (stderr-println "Error fetching URL:" (.getMessage e))
+          (System/exit 1))))))
+
+(apply -main *command-line-args*)
