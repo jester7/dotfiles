@@ -10,8 +10,34 @@ if [[ "$IS_MACOS" == "true" ]]; then
 fi
 
 export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+# Lazy-load nvm so Homebrew Node stays first on PATH until explicitly needed.
+load_nvm() {
+    unset -f nvm load_nvm
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+}
+
+nvm() {
+    load_nvm
+    nvm "$@"
+}
+
+normalize_path() {
+    local dir
+    local -a raw_path normalized_path
+
+    raw_path=("${(@s/:/)PATH}")
+    for dir in "${raw_path[@]}"; do
+        [[ -z "$dir" ]] && continue
+        [[ "$dir" == "~/"* ]] && dir="$HOME/${dir#\~/}"
+        normalized_path+=("$dir")
+    done
+
+    typeset -U normalized_path
+    path=("${normalized_path[@]}")
+    export PATH
+}
 
 if [[ "$IS_MACOS" == "true" ]]; then
     alias emacs="emacsclient -c -n"
@@ -32,6 +58,8 @@ export PATH="$HOME/.local/bin:$PATH:$HOME/bin"
 if [[ "$IS_MACOS" == "true" ]]; then
     export PATH="/usr/local/opt/curl/bin:$PATH:$HOMEBREW_PREFIX/opt/postgresql@18/bin"
 fi
+
+normalize_path
 
 if [[ "$IS_MACOS" == "true" ]]; then
     export SUDO_EDITOR="emacsclient -c -n"
