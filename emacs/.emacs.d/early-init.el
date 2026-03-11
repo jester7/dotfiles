@@ -76,13 +76,14 @@ First tries to load from private config, falls back to public if not found."
   (when (file-directory-p dir)
     (car (sort (directory-files dir nil "^v?[0-9]" t) #'string>))))
 
+(defun my-deduplicate-paths (paths)
+  "Return PATHS with duplicates removed, preserving order."
+  (delete-dups (copy-sequence paths)))
 
-(defun get-latest-node-path ()
-  "Get path to latest node version."
-  (let* ((node-versions-dir (expand-file-name "~/.nvm/versions/node"))
-         (latest-version (get-latest-version-in-dir node-versions-dir)))
-    (when latest-version
-      (concat node-versions-dir "/" latest-version "/bin"))))
+(defun my-existing-paths (paths)
+  "Return only existing directories from PATHS."
+  (seq-filter #'file-directory-p paths))
+
 
 (defun get-latest-dotnet-path ()
   "Get path to latest dotnet SDK."
@@ -98,7 +99,6 @@ First tries to load from private config, falls back to public if not found."
              (append
               ;; Shared paths
               (list
-               (get-latest-node-path)
                (expand-file-name "~/bin")
                (expand-file-name "~/.cargo/bin")
                (expand-file-name "~/.local/bin")
@@ -120,5 +120,6 @@ First tries to load from private config, falls back to public if not found."
                  (expand-file-name "~/.dotnet/tools")
                  (get-latest-dotnet-path)
                  "/opt/homebrew/bin"))))))
-  (setq exec-path (append new-paths exec-path))
+  (setq exec-path (my-existing-paths
+                   (my-deduplicate-paths (append new-paths exec-path))))
   (setenv "PATH" (string-join exec-path ":")))
