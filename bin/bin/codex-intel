@@ -1,0 +1,90 @@
+#!/bin/bash
+
+set -euo pipefail
+
+APP_PATH="${CODEX_INTEL_APP_PATH:-/Applications/Codex-Intel.app}"
+CLI_PATH="${CODEX_INTEL_CLI_PATH:-/usr/local/bin/codex}"
+WAIT_FOR_EXIT=false
+VERBOSE=false
+
+usage() {
+    cat <<'EOF'
+Usage: codex-intel [OPTIONS] [-- APP_ARGS...]
+
+Launch the Intel Codex app with an explicit CODEX_CLI_PATH.
+
+Options:
+  -a, --app PATH      Override app bundle path
+  -c, --cli PATH      Override CLI path passed to the app
+  -W, --wait          Wait for the app instance to exit
+  -v, --verbose       Print the generated open command
+  -h, --help          Show this help
+
+Examples:
+  codex-intel
+  codex-intel --wait
+  codex-intel -- --inspect
+EOF
+}
+
+fail() {
+    echo "codex-intel: $*" >&2
+    exit 1
+}
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        -a|--app)
+            [[ $# -ge 2 ]] || fail "missing value for $1"
+            APP_PATH="$2"
+            shift 2
+            ;;
+        -c|--cli)
+            [[ $# -ge 2 ]] || fail "missing value for $1"
+            CLI_PATH="$2"
+            shift 2
+            ;;
+        -W|--wait)
+            WAIT_FOR_EXIT=true
+            shift
+            ;;
+        -v|--verbose)
+            VERBOSE=true
+            shift
+            ;;
+        -h|--help)
+            usage
+            exit 0
+            ;;
+        --)
+            shift
+            break
+            ;;
+        *)
+            fail "unknown option: $1"
+            ;;
+    esac
+done
+
+[[ -d "$APP_PATH" ]] || fail "app bundle not found at $APP_PATH"
+[[ -x "$CLI_PATH" ]] || fail "CLI executable not found at $CLI_PATH"
+
+OPEN_ARGS=(open -n --env "CODEX_CLI_PATH=$CLI_PATH")
+
+if [[ "$WAIT_FOR_EXIT" == "true" ]]; then
+    OPEN_ARGS+=(-W)
+fi
+
+OPEN_ARGS+=("$APP_PATH")
+
+if [[ $# -gt 0 ]]; then
+    OPEN_ARGS+=(--args "$@")
+fi
+
+if [[ "$VERBOSE" == "true" ]]; then
+    printf 'Launching:'
+    printf ' %q' "${OPEN_ARGS[@]}"
+    printf '\n'
+fi
+
+"${OPEN_ARGS[@]}"
