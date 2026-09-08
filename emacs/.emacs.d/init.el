@@ -1073,6 +1073,7 @@ If displacement is not provided, defaults to 10 pixels."
 (load-file "~/.emacs.d/jester/snippets.el")
 
 (load "~/.emacs.d/jester/telephone-utils")
+(load "~/.emacs.d/jester/diccionario")
 
 (when (eq my-machine-type 'mac-laptop) (set-face-attribute 'default nil :height 145))
 
