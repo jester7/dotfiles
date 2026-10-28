@@ -56,6 +56,8 @@ killgrep() {
   pkill -9 "$1"
 }
 export PATH="$HOME/.local/bin:$PATH:$HOME/bin"
+# OpenCode 2 (installed with the official installer's --no-modify-path)
+[[ -d "$HOME/.opencode/bin" ]] && export PATH="$HOME/.opencode/bin:$PATH"
 if [[ "$IS_MACOS" == "true" ]]; then
     export PATH="/usr/local/opt/curl/bin:$PATH:$HOMEBREW_PREFIX/opt/postgresql@18/bin"
 fi
