@@ -104,6 +104,9 @@ First tries to load from private config, falls back to public if not found."
                (expand-file-name "~/.local/bin")
                "/usr/local/bin"
                "/usr/local/sbin"
+               ;; MacPorts; after Homebrew so brew wins collisions until removed
+               "/opt/local/bin"
+               "/opt/local/sbin"
                "/usr/bin"
                "/bin"
                "/usr/sbin"
